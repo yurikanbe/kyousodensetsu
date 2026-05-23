@@ -1,8 +1,10 @@
+"use client";
 import Link from "next/link";
-import { mockReligions } from "@/lib/mockData";
-import { mockUser } from "@/lib/mockData";
+import { useRouter } from "next/navigation";
+import { mockReligions, mockUser } from "@/lib/mockData";
 
 export default function FollowingPage() {
+  const router = useRouter();
   const joinedReligions = mockReligions.filter((r) =>
     mockUser.joinedReligionIds.includes(r.id)
   );
@@ -30,9 +32,15 @@ export default function FollowingPage() {
                   <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium mb-2">
                     信仰中
                   </div>
-                  <Link href={`/religion/${religion.id}/assembly`}>
-                    <span className="text-xs text-purple-600 hover:underline">集会へ →</span>
-                  </Link>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      router.push(`/religion/${religion.id}/assembly`);
+                    }}
+                    className="text-xs text-purple-600 hover:underline"
+                  >
+                    集会へ →
+                  </button>
                 </div>
               </div>
             </div>
