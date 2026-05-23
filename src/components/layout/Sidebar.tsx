@@ -1,23 +1,42 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { doc, getDoc, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Religion } from "@/types";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useAuthStore();
+  const [joinedReligions, setJoinedReligions] = useState<Religion[]>([]);
+
+  useEffect(() => {
+    if (!user || user.joinedReligionIds.length === 0) {
+      setJoinedReligions([]);
+      return;
+    }
+    Promise.all(
+      user.joinedReligionIds.map((id) => getDoc(doc(db, "religions", id)))
+    ).then((snaps) => {
+      setJoinedReligions(
+        snaps
+          .filter((s) => s.exists())
+          .map((s) => ({
+            id: s.id,
+            ...s.data(),
+            createdAt: (s.data()!.createdAt as Timestamp)?.toDate() ?? new Date(),
+          } as Religion))
+      );
+    });
+  }, [user]);
 
   const navItems = [
     { href: "/assembly", label: "集会", icon: "💬" },
     { href: "/following", label: "信仰中の宗教", icon: "🔥" },
     { href: "/my-religions", label: "創設した宗教", icon: "🏛️" },
     { href: "/ranking", label: "ランキング", icon: "🏆" },
-  ];
-
-  const joinedReligions = [
-    { id: "religion-1", name: "朝ごはんはパン教", icon: "🍞" },
-    { id: "religion-2", name: "コーヒーは至高教", icon: "☕" },
-    { id: "religion-3", name: "昼寝は正義教", icon: "😮" },
   ];
 
   return (
@@ -47,21 +66,25 @@ export default function Sidebar() {
           </Link>
         ))}
 
-        <p className="text-xs text-gray-400 font-semibold px-3 py-2 mt-4">信仰中</p>
-        {joinedReligions.map((rel) => (
-          <Link key={rel.id} href={`/religion/${rel.id}`}>
-            <div
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors cursor-pointer ${
-                pathname === `/religion/${rel.id}`
-                  ? "bg-purple-100 text-purple-700 font-semibold"
-                  : "text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              <span className="text-lg">{rel.icon}</span>
-              <span className="text-sm truncate">{rel.name}</span>
-            </div>
-          </Link>
-        ))}
+        {joinedReligions.length > 0 && (
+          <>
+            <p className="text-xs text-gray-400 font-semibold px-3 py-2 mt-4">信仰中</p>
+            {joinedReligions.map((rel) => (
+              <Link key={rel.id} href={`/religion/${rel.id}`}>
+                <div
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors cursor-pointer ${
+                    pathname === `/religion/${rel.id}`
+                      ? "bg-purple-100 text-purple-700 font-semibold"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }`}
+                >
+                  <span className="text-lg">{rel.icon}</span>
+                  <span className="text-sm truncate">{rel.name}</span>
+                </div>
+              </Link>
+            ))}
+          </>
+        )}
       </nav>
 
       {user && (

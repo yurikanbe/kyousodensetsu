@@ -1,34 +1,74 @@
 "use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signOut } from "firebase/auth";
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, Timestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
-import { mockReligions, mockPosts } from "@/lib/mockData";
 import { RELIGION_ICONS } from "@/types";
+import { Religion, Post } from "@/types";
 
 export default function ProfilePage() {
-  const { user } = useAuthStore();
+  const router = useRouter();
+  const { user, setUser } = useAuthStore();
+  const [joinedReligions, setJoinedReligions] = useState<Religion[]>([]);
+  const [myPosts, setMyPosts] = useState<Post[]>([]);
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20 gap-4">
-        <p className="text-gray-500">ログインが必要です</p>
-        <Link href="/auth">
-          <button className="bg-purple-600 text-white px-6 py-2 rounded-xl">
-            ログインする
-          </button>
-        </Link>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.joinedReligionIds.length > 0) {
+      Promise.all(
+        user.joinedReligionIds.map((id) => getDoc(doc(db, "religions", id)))
+      ).then((snaps) => {
+        setJoinedReligions(
+          snaps
+            .filter((s) => s.exists())
+            .map((s) => ({
+              id: s.id,
+              ...s.data(),
+              createdAt: (s.data()!.createdAt as Timestamp)?.toDate() ?? new Date(),
+            } as Religion))
+        );
+      });
+    }
+
+    getDocs(query(collection(db, "posts"), where("authorId", "==", user.id))).then((snap) => {
+      const posts = snap.docs
+        .map((d) => ({
+          id: d.id,
+          ...d.data(),
+          hasPrayed: false,
+          createdAt: (d.data().createdAt as Timestamp)?.toDate() ?? new Date(),
+        } as Post))
+        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      setMyPosts(posts);
+    });
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    setUser(null);
+    router.push("/auth");
+  };
+
+  const handleAvatarChange = async (icon: string) => {
+    if (!user || user.coins < 200 || user.avatarIcon === icon) return;
+    await updateDoc(doc(db, "users", user.id), {
+      avatarIcon: icon,
+      coins: user.coins - 200,
+    });
+    setUser({ ...user, avatarIcon: icon, coins: user.coins - 200 });
+  };
+
+  if (!user) return null;
 
   const xpPercent = Math.round((user.xp / user.xpToNext) * 100);
-  const joinedReligions = mockReligions.filter((r) =>
-    user.joinedReligionIds.includes(r.id)
-  );
-  const myPosts = mockPosts.filter((p) => p.authorId === user.id);
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <div className="bg-gradient-to-br from-purple-700 to-indigo-800 rounded-xl p-6 text-white">
+      <div className="bg-linear-to-br from-purple-700 to-indigo-800 rounded-xl p-6 text-white">
         <div className="flex items-center gap-4">
           <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-4xl">
             {user.avatarIcon}
@@ -41,9 +81,6 @@ export default function ProfilePage() {
               <span>🏛️ {user.joinedReligionIds.length} 宗教</span>
             </div>
           </div>
-          <button className="ml-auto px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm rounded-lg transition-colors">
-            編集
-          </button>
         </div>
 
         <div className="mt-4">
@@ -74,34 +111,38 @@ export default function ProfilePage() {
         ))}
       </div>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <h2 className="font-bold text-gray-800 mb-3">🏛️ 信仰中の宗教</h2>
-        <div className="space-y-2">
-          {joinedReligions.map((rel) => (
-            <Link key={rel.id} href={`/religion/${rel.id}`}>
-              <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
-                  {rel.icon}
+      {joinedReligions.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <h2 className="font-bold text-gray-800 mb-3">🏛️ 信仰中の宗教</h2>
+          <div className="space-y-2">
+            {joinedReligions.map((rel) => (
+              <Link key={rel.id} href={`/religion/${rel.id}`}>
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
+                    {rel.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-gray-800 truncate">{rel.name}</p>
+                    <p className="text-xs text-gray-500">👥 {rel.memberCount.toLocaleString()}人 · Lv.{rel.level}</p>
+                  </div>
+                  <span className="text-gray-400 text-xs">→</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-800 truncate">{rel.name}</p>
-                  <p className="text-xs text-gray-500">👥 {rel.memberCount.toLocaleString()}人 · Lv.{rel.level}</p>
-                </div>
-                <span className="text-gray-400 text-xs">→</span>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 p-4">
         <h2 className="font-bold text-gray-800 mb-1">🎯 アバターアイコン変更</h2>
-        <p className="text-xs text-gray-400 mb-3">コイン200枚でアイコンを変更できます</p>
+        <p className="text-xs text-gray-400 mb-3">コイン200枚でアイコンを変更できます（現在: {user.coins}枚）</p>
         <div className="grid grid-cols-10 gap-2">
           {RELIGION_ICONS.map((icon) => (
             <button
               key={icon}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xl transition-all hover:scale-110 ${
+              onClick={() => handleAvatarChange(icon)}
+              disabled={user.coins < 200 && user.avatarIcon !== icon}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xl transition-all hover:scale-110 disabled:opacity-40 ${
                 user.avatarIcon === icon
                   ? "bg-purple-600 ring-2 ring-purple-400"
                   : "bg-gray-100 hover:bg-gray-200"
@@ -135,7 +176,10 @@ export default function ProfilePage() {
       )}
 
       <div className="pb-4">
-        <button className="w-full py-3 border border-red-200 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-colors">
+        <button
+          onClick={handleLogout}
+          className="w-full py-3 border border-red-200 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-colors"
+        >
           ログアウト
         </button>
       </div>

@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockReligions } from "@/lib/mockData";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { Religion } from "@/types";
 
 type SortKey = "memberCount" | "level" | "totalOfferings" | "weeklyGrowth";
@@ -18,12 +19,25 @@ const RANK_STYLES = ["bg-amber-400", "bg-gray-400", "bg-amber-700"];
 export default function RankingPage() {
   const [sortKey, setSortKey] = useState<SortKey>("memberCount");
   const [search, setSearch] = useState("");
+  const [religions, setReligions] = useState<Religion[]>([]);
 
-  const sorted = [...mockReligions]
+  useEffect(() => {
+    getDocs(collection(db, "religions")).then((snap) => {
+      setReligions(
+        snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+          createdAt: (d.data().createdAt as Timestamp)?.toDate() ?? new Date(),
+        } as Religion))
+      );
+    });
+  }, []);
+
+  const sorted = [...religions]
     .filter((r) => r.name.includes(search) || r.founderName.includes(search))
     .sort((a, b) => b[sortKey] - a[sortKey]);
 
-  const trending = [...mockReligions]
+  const trending = [...religions]
     .sort((a, b) => b.weeklyGrowth - a.weeklyGrowth)
     .slice(0, 3);
 
@@ -53,15 +67,22 @@ export default function RankingPage() {
             </div>
 
             <div className="space-y-2">
-              {sorted.map((religion, index) => (
-                <RankingItem
-                  key={religion.id}
-                  religion={religion}
-                  rank={index + 1}
-                  sortKey={sortKey}
-                  rankStyle={RANK_STYLES[index] ?? ""}
-                />
-              ))}
+              {sorted.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  <p className="text-4xl mb-3">🏆</p>
+                  <p>まだ宗教がありません</p>
+                </div>
+              ) : (
+                sorted.map((religion, index) => (
+                  <RankingItem
+                    key={religion.id}
+                    religion={religion}
+                    rank={index + 1}
+                    sortKey={sortKey}
+                    rankStyle={RANK_STYLES[index] ?? ""}
+                  />
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -78,26 +99,26 @@ export default function RankingPage() {
             />
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h3 className="font-bold text-gray-800 mb-3 text-sm flex items-center gap-1">
-              🔥 急上昇
-            </h3>
-            <div className="space-y-3">
-              {trending.map((rel, i) => (
-                <Link key={rel.id} href={`/religion/${rel.id}`}>
-                  <div className="flex items-start gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-                    <span className="text-xs font-bold text-orange-500 w-4">
-                      #{i + 1}
-                    </span>
-                    <div>
-                      <p className="text-xs font-semibold text-gray-800 leading-tight">{rel.name}</p>
-                      <p className="text-xs text-orange-500">+{rel.weeklyGrowth.toLocaleString()} 今週</p>
+          {trending.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <h3 className="font-bold text-gray-800 mb-3 text-sm flex items-center gap-1">
+                🔥 急上昇
+              </h3>
+              <div className="space-y-3">
+                {trending.map((rel, i) => (
+                  <Link key={rel.id} href={`/religion/${rel.id}`}>
+                    <div className="flex items-start gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                      <span className="text-xs font-bold text-orange-500 w-4">#{i + 1}</span>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-800 leading-tight">{rel.name}</p>
+                        <p className="text-xs text-orange-500">+{rel.weeklyGrowth.toLocaleString()} 今週</p>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

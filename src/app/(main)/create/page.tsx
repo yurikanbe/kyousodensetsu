@@ -1,10 +1,14 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { collection, addDoc, doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { useAuthStore } from "@/store/useAuthStore";
 import { RELIGION_ICONS, RELIGION_CATEGORIES } from "@/types";
 
 export default function CreateReligionPage() {
   const router = useRouter();
+  const { user, setUser } = useAuthStore();
   const [name, setName] = useState("");
   const [selectedIcon, setSelectedIcon] = useState(RELIGION_ICONS[0]);
   const [doctrine, setDoctrine] = useState("");
@@ -29,18 +33,52 @@ export default function CreateReligionPage() {
       setError("教義を入力してください");
       return;
     }
+    if (!user) {
+      setError("ログインが必要です");
+      return;
+    }
 
     setIsSubmitting(true);
-    // Firestore連携後に実装: 宗教データを保存
-    await new Promise((r) => setTimeout(r, 800));
-    setIsSubmitting(false);
-    router.push("/");
+    try {
+      const religionRef = await addDoc(collection(db, "religions"), {
+        name: name.trim(),
+        icon: selectedIcon,
+        doctrine: doctrine.trim(),
+        category,
+        isPublic,
+        founderUserId: user.id,
+        founderName: user.displayName,
+        memberCount: 1,
+        level: 1,
+        scriptureCount: 0,
+        hymnCount: 0,
+        totalOfferings: 0,
+        weeklyGrowth: 0,
+        createdAt: serverTimestamp(),
+      });
+
+      await updateDoc(doc(db, "users", user.id), {
+        foundedReligionIds: arrayUnion(religionRef.id),
+        joinedReligionIds: arrayUnion(religionRef.id),
+      });
+
+      setUser({
+        ...user,
+        foundedReligionIds: [...user.foundedReligionIds, religionRef.id],
+        joinedReligionIds: [...user.joinedReligionIds, religionRef.id],
+      });
+
+      router.push(`/religion/${religionRef.id}`);
+    } catch {
+      setError("宗教の創設に失敗しました");
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="max-w-2xl mx-auto">
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-purple-600 to-purple-800 px-6 py-5 text-white">
+        <div className="bg-linear-to-r from-purple-600 to-purple-800 px-6 py-5 text-white">
           <div className="flex items-center gap-3">
             <span className="text-3xl">🔱</span>
             <div>

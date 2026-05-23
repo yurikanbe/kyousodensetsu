@@ -1,7 +1,6 @@
 "use client";
 import { create } from "zustand";
 import { User } from "@/types";
-import { mockUser } from "@/lib/mockData";
 
 interface AuthState {
   user: User | null;
@@ -13,8 +12,8 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
-  user: mockUser,
-  isLoading: false,
+  user: null,
+  isLoading: true,
   setUser: (user) => set({ user }),
   setLoading: (isLoading) => set({ isLoading }),
   addCoins: (amount) =>

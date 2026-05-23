@@ -1,8 +1,29 @@
 "use client";
-import { use, useState } from "react";
+import { use, useState, useEffect } from "react";
 import Link from "next/link";
-import { mockReligions, mockMembers, mockMissions } from "@/lib/mockData";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  increment,
+  Timestamp,
+  collection,
+  query,
+  where,
+  limit,
+  getDocs,
+} from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Religion, Member, Mission } from "@/types";
+
+const ROLE_COLOR: Record<string, string> = {
+  教祖: "text-amber-600",
+  副教祖: "text-purple-600",
+  信者: "text-gray-600",
+};
 
 export default function ReligionDetailPage({
   params,
@@ -10,45 +31,99 @@ export default function ReligionDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const { user, addCoins, addXp } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"info" | "members">("info");
-  const [isJoined, setIsJoined] = useState(
-    user?.joinedReligionIds.includes(id) ?? false
-  );
+  const { user, setUser, addCoins, addXp } = useAuthStore();
+  const [religion, setReligion] = useState<Religion | null>(null);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [missions, setMissions] = useState<Mission[]>([]);
+  const [isJoined, setIsJoined] = useState(false);
   const [showOfferingModal, setShowOfferingModal] = useState(false);
   const [offeringAmount, setOfferingAmount] = useState(100);
 
-  const religion = mockReligions.find((r) => r.id === id) ?? mockReligions[0];
-  const missions = mockMissions.filter((m) => m.religionId === id || true).slice(0, 3);
+  useEffect(() => {
+    getDoc(doc(db, "religions", id)).then((snap) => {
+      if (snap.exists()) {
+        setReligion({
+          id: snap.id,
+          ...snap.data(),
+          createdAt: (snap.data().createdAt as Timestamp)?.toDate() ?? new Date(),
+        } as Religion);
+      }
+    });
 
-  const levelPercent = Math.min(((religion.level % 10) / 10) * 100, 100);
+    getDocs(
+      query(collection(db, "users"), where("joinedReligionIds", "array-contains", id), limit(5))
+    ).then((snap) => {
+      setMembers(
+        snap.docs.map((d) => ({
+          userId: d.id,
+          displayName: d.data().displayName,
+          avatarIcon: d.data().avatarIcon,
+          role: (d.data().foundedReligionIds as string[])?.includes(id) ? "教祖" : "信者",
+          level: d.data().level,
+        } as Member))
+      );
+    });
 
-  const handleJoin = () => {
+    getDocs(collection(db, `religions/${id}/missions`)).then((snap) => {
+      setMissions(
+        snap.docs.map((d) => ({ id: d.id, religionId: id, ...d.data() } as Mission))
+      );
+    });
+  }, [id]);
+
+  useEffect(() => {
+    if (user) {
+      setIsJoined(user.joinedReligionIds.includes(id));
+    }
+  }, [user, id]);
+
+  const handleJoin = async () => {
+    if (!user) return;
+    await Promise.all([
+      updateDoc(doc(db, "users", user.id), { joinedReligionIds: arrayUnion(id) }),
+      updateDoc(doc(db, "religions", id), { memberCount: increment(1) }),
+    ]);
     setIsJoined(true);
+    setUser({ ...user, joinedReligionIds: [...user.joinedReligionIds, id] });
+    setReligion((prev) => prev ? { ...prev, memberCount: prev.memberCount + 1 } : prev);
     addXp(50);
   };
 
-  const handleLeave = () => {
+  const handleLeave = async () => {
+    if (!user) return;
+    await Promise.all([
+      updateDoc(doc(db, "users", user.id), { joinedReligionIds: arrayRemove(id) }),
+      updateDoc(doc(db, "religions", id), { memberCount: increment(-1) }),
+    ]);
     setIsJoined(false);
+    setUser({ ...user, joinedReligionIds: user.joinedReligionIds.filter((rid) => rid !== id) });
+    setReligion((prev) => prev ? { ...prev, memberCount: prev.memberCount - 1 } : prev);
   };
 
-  const handleOffering = () => {
-    if (offeringAmount > 0) {
-      addCoins(-offeringAmount);
-      addXp(offeringAmount);
-      setShowOfferingModal(false);
-    }
+  const handleOffering = async () => {
+    if (!user || offeringAmount <= 0) return;
+    await Promise.all([
+      updateDoc(doc(db, "users", user.id), { coins: increment(-offeringAmount) }),
+      updateDoc(doc(db, "religions", id), { totalOfferings: increment(offeringAmount) }),
+    ]);
+    addCoins(-offeringAmount);
+    addXp(offeringAmount);
+    setShowOfferingModal(false);
   };
 
-  const ROLE_COLOR: Record<string, string> = {
-    教祖: "text-amber-600",
-    副教祖: "text-purple-600",
-    信者: "text-gray-600",
-  };
+  if (!religion) {
+    return (
+      <div className="flex items-center justify-center py-20 text-gray-400">
+        <p>読み込み中...</p>
+      </div>
+    );
+  }
+
+  const levelPercent = Math.min(((religion.level % 10) / 10) * 100, 100);
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
-      <div className="bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl p-5 text-white">
+      <div className="bg-linear-to-r from-purple-600 to-purple-800 rounded-xl p-5 text-white">
         <div className="flex items-start gap-4">
           <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center text-4xl shrink-0">
             {religion.icon}
@@ -133,53 +208,50 @@ export default function ReligionDetailPage({
         </div>
 
         <div className="space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h2 className="font-bold text-gray-800 mb-3">📋 今日のミッション</h2>
-            <div className="space-y-3">
-              {missions.map((mission) => (
-                <div
-                  key={mission.id}
-                  className={`p-3 rounded-lg border ${
-                    mission.completed
-                      ? "bg-green-50 border-green-200"
-                      : "bg-gray-50 border-gray-200"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-2">
+          {missions.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <h2 className="font-bold text-gray-800 mb-3">📋 今日のミッション</h2>
+              <div className="space-y-3">
+                {missions.slice(0, 3).map((mission) => (
+                  <div
+                    key={mission.id}
+                    className={`p-3 rounded-lg border ${
+                      mission.completed
+                        ? "bg-green-50 border-green-200"
+                        : "bg-gray-50 border-gray-200"
+                    }`}
+                  >
                     <p className={`text-sm font-medium ${mission.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
                       {mission.completed ? "✅" : "⬜"} {mission.title}
                     </p>
+                    <p className="text-xs text-amber-600 mt-1">報酬: 🪙 {mission.reward}コイン</p>
                   </div>
-                  <p className="text-xs text-amber-600 mt-1">報酬: 🪙 {mission.reward}コイン</p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <div className="flex gap-2 mb-3">
-              <button
-                onClick={() => setActiveTab("info")}
-                className={`text-sm font-medium px-3 py-1 rounded-full ${activeTab === "info" ? "bg-purple-100 text-purple-700" : "text-gray-500"}`}
-              >
-                主要メンバー
-              </button>
-            </div>
-            <div className="space-y-3">
-              {mockMembers.map((member) => (
-                <div key={member.userId} className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-lg shrink-0">
-                    {member.avatarIcon}
+            <h2 className="font-bold text-gray-800 mb-3">👥 主要メンバー</h2>
+            {members.length === 0 ? (
+              <p className="text-xs text-gray-400 text-center py-2">まだメンバーがいません</p>
+            ) : (
+              <div className="space-y-3">
+                {members.map((member) => (
+                  <div key={member.userId} className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-lg shrink-0">
+                      {member.avatarIcon}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-800">{member.displayName}</p>
+                      <p className={`text-xs ${ROLE_COLOR[member.role]}`}>
+                        {member.role} | Lv.{member.level}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-800">{member.displayName}</p>
-                    <p className={`text-xs ${ROLE_COLOR[member.role]}`}>
-                      {member.role} | Lv.{member.level}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,16 +1,31 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { mockReligions } from "@/lib/mockData";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { RELIGION_CATEGORIES } from "@/types";
+import { Religion } from "@/types";
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("すべて");
+  const [allReligions, setAllReligions] = useState<Religion[]>([]);
 
   const categories = ["すべて", ...RELIGION_CATEGORIES];
 
-  const results = mockReligions.filter((r) => {
+  useEffect(() => {
+    getDocs(collection(db, "religions")).then((snap) => {
+      setAllReligions(
+        snap.docs.map((d) => ({
+          id: d.id,
+          ...d.data(),
+          createdAt: (d.data().createdAt as Timestamp)?.toDate() ?? new Date(),
+        } as Religion))
+      );
+    });
+  }, []);
+
+  const results = allReligions.filter((r) => {
     const matchQuery =
       !query || r.name.includes(query) || r.doctrine.includes(query) || r.founderName.includes(query);
     const matchCategory = selectedCategory === "すべて" || r.category === selectedCategory;
@@ -73,10 +88,16 @@ export default function SearchPage() {
             </div>
           </Link>
         ))}
-        {results.length === 0 && (
+        {results.length === 0 && allReligions.length > 0 && (
           <div className="text-center py-12 text-gray-400">
             <p className="text-4xl mb-3">🔍</p>
             <p>該当する宗教が見つかりませんでした</p>
+          </div>
+        )}
+        {allReligions.length === 0 && (
+          <div className="text-center py-12 text-gray-400">
+            <p className="text-4xl mb-3">🏛️</p>
+            <p>まだ宗教がありません</p>
           </div>
         )}
       </div>

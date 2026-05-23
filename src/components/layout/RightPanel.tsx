@@ -1,14 +1,28 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { collection, getDocs, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
-import { mockReligions } from "@/lib/mockData";
+import { Religion } from "@/types";
 
 export default function RightPanel() {
   const { user } = useAuthStore();
+  const [recommendedReligions, setRecommendedReligions] = useState<Religion[]>([]);
 
-  const recommendedReligions = mockReligions
-    .filter((r) => !user?.joinedReligionIds.includes(r.id))
-    .slice(0, 3);
+  useEffect(() => {
+    if (!user) return;
+    getDocs(collection(db, "religions")).then((snap) => {
+      const all = snap.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+        createdAt: (d.data().createdAt as Timestamp)?.toDate() ?? new Date(),
+      } as Religion));
+      setRecommendedReligions(
+        all.filter((r) => !user.joinedReligionIds.includes(r.id)).slice(0, 3)
+      );
+    });
+  }, [user]);
 
   if (!user) return null;
 
@@ -53,24 +67,26 @@ export default function RightPanel() {
           </div>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <h3 className="font-bold text-gray-800 mb-3">🔥 おすすめ宗教</h3>
-          <div className="space-y-3">
-            {recommendedReligions.map((rel) => (
-              <Link key={rel.id} href={`/religion/${rel.id}`}>
-                <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl shrink-0">
-                    {rel.icon}
+        {recommendedReligions.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 p-4">
+            <h3 className="font-bold text-gray-800 mb-3">🔥 おすすめ宗教</h3>
+            <div className="space-y-3">
+              {recommendedReligions.map((rel) => (
+                <Link key={rel.id} href={`/religion/${rel.id}`}>
+                  <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl shrink-0">
+                      {rel.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-gray-800 truncate">{rel.name}</p>
+                      <p className="text-xs text-gray-500">{rel.memberCount.toLocaleString()}人</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{rel.name}</p>
-                    <p className="text-xs text-gray-500">{rel.memberCount.toLocaleString()}人</p>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
