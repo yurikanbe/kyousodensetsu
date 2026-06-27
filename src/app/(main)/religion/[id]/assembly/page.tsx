@@ -12,9 +12,9 @@ function timeLabel(date: Date): string {
 }
 
 const ROLE_BADGE: Record<string, string> = {
-  教祖: "bg-amber-100 text-amber-700",
-  副教祖: "bg-purple-100 text-purple-700",
-  信者: "bg-gray-100 text-gray-600",
+  教祖: "bg-stone-900 text-white",
+  副教祖: "bg-stone-100 text-stone-700 border border-stone-300",
+  信者: "bg-stone-100 text-stone-600",
 };
 
 export default function AssemblyPage({
@@ -96,19 +96,19 @@ export default function AssemblyPage({
 
   return (
     <div className="max-w-4xl mx-auto flex gap-4 h-[calc(100vh-8rem)]">
-      <div className="flex-1 flex flex-col bg-white rounded-xl border border-gray-200 overflow-hidden min-w-0">
-        <div className="bg-linear-to-r from-purple-600 to-purple-800 px-4 py-3 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center text-2xl shrink-0">
+      <div className="flex-1 flex flex-col bg-white border border-stone-200 overflow-hidden min-w-0">
+        <div className="bg-stone-900 px-4 py-3 flex items-center gap-3">
+          <div className="w-9 h-9 bg-white/10 flex items-center justify-center text-xl shrink-0">
             {religion?.icon ?? "🏛️"}
           </div>
           <div>
-            <h1 className="text-white font-bold text-sm">{religion?.name ?? "集会"} — 集会</h1>
+            <h1 className="text-white font-bold text-sm tracking-wide">{religion?.name ?? "集会"} — 集会</h1>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-              <span className="text-purple-200 text-xs">{uniqueParticipants.length}人が参加中</span>
+              <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+              <span className="text-stone-400 text-xs">{uniqueParticipants.length}人が参加中</span>
             </div>
           </div>
-          <Link href={`/religion/${id}`} className="ml-auto text-purple-200 hover:text-white text-sm">
+          <Link href={`/religion/${id}`} className="ml-auto text-stone-500 hover:text-white text-xs tracking-wide transition-colors">
             ← 戻る
           </Link>
         </div>
@@ -119,77 +119,77 @@ export default function AssemblyPage({
             return (
               <div key={msg.id} className={`flex gap-3 ${isMe ? "flex-row-reverse" : ""}`}>
                 {!isMe && (
-                  <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-lg shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-base shrink-0">
                     {msg.authorIcon}
                   </div>
                 )}
                 <div className={`max-w-xs md:max-w-md ${isMe ? "items-end" : "items-start"} flex flex-col`}>
                   {!isMe && (
                     <div className="flex items-center gap-1.5 mb-1">
-                      <span className="text-xs font-semibold text-gray-800">{msg.authorName}</span>
-                      <span className={`text-xs px-1.5 py-0.5 rounded-full ${ROLE_BADGE[msg.authorRole]}`}>
+                      <span className="text-xs font-semibold text-stone-800">{msg.authorName}</span>
+                      <span className={`text-xs px-1.5 py-0.5 ${ROLE_BADGE[msg.authorRole]}`}>
                         {msg.authorRole}
                       </span>
                     </div>
                   )}
                   <div
-                    className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
+                    className={`px-4 py-2.5 text-sm leading-relaxed ${
                       isMe
-                        ? "bg-purple-600 text-white rounded-tr-sm"
-                        : "bg-gray-100 text-gray-800 rounded-tl-sm"
+                        ? "bg-stone-900 text-white"
+                        : "bg-stone-100 text-stone-800"
                     }`}
                   >
                     {msg.content}
                   </div>
-                  <span className="text-xs text-gray-400 mt-1">{timeLabel(msg.createdAt)}</span>
+                  <span className="text-xs text-stone-400 mt-1">{timeLabel(msg.createdAt)}</span>
                 </div>
               </div>
             );
           })}
           {messages.length === 0 && (
-            <div className="text-center py-12 text-gray-400 text-sm">
-              まだメッセージがありません。最初のメッセージを送りましょう！
+            <div className="text-center py-12 text-stone-400 text-xs tracking-widest">
+              まだメッセージがありません。最初のメッセージを送りましょう。
             </div>
           )}
           <div ref={bottomRef} />
         </div>
 
-        <div className="border-t border-gray-200 p-3 flex gap-2">
+        <div className="border-t border-stone-200 p-3 flex gap-2">
           <input
             type="text"
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="メッセージを入力..."
-            className="flex-1 border border-gray-200 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="flex-1 border border-stone-200 px-4 py-2.5 text-sm focus:outline-none focus:border-stone-400"
           />
           <button
             onClick={handleSend}
             disabled={!text.trim()}
-            className="w-10 h-10 bg-purple-600 hover:bg-purple-700 disabled:opacity-40 text-white rounded-full flex items-center justify-center transition-colors"
+            className="w-10 h-10 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white flex items-center justify-center transition-colors text-sm"
           >
             ▶
           </button>
         </div>
       </div>
 
-      <div className="w-56 shrink-0 space-y-4 hidden lg:block">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <h3 className="font-bold text-gray-800 mb-3 text-sm">
-            👥 参加者 ({uniqueParticipants.length})
-          </h3>
+      <div className="w-52 shrink-0 space-y-4 hidden lg:block">
+        <div className="bg-white border border-stone-200 p-4">
+          <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">
+            参加者 ({uniqueParticipants.length})
+          </p>
           <div className="space-y-2">
             {uniqueParticipants.slice(0, 5).map((msg) => (
               <div key={msg.authorId} className="flex items-center gap-2">
                 <div className="relative">
-                  <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-base">
+                  <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-sm">
                     {msg.authorIcon}
                   </div>
-                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-400 border-2 border-white rounded-full"></span>
+                  <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-400 border-2 border-white rounded-full"></span>
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-gray-800 leading-tight">{msg.authorName}</p>
-                  <p className="text-xs text-gray-400">{msg.authorRole}</p>
+                  <p className="text-xs font-medium text-stone-900 leading-tight">{msg.authorName}</p>
+                  <p className="text-xs text-stone-400">{msg.authorRole}</p>
                 </div>
               </div>
             ))}
@@ -197,11 +197,9 @@ export default function AssemblyPage({
         </div>
 
         {religion?.pinnedMessage && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h3 className="font-bold text-gray-800 mb-2 text-sm flex items-center gap-1">
-              📌 固定メッセージ
-            </h3>
-            <p className="text-xs text-gray-600 leading-relaxed">{religion.pinnedMessage}</p>
+          <div className="bg-white border border-stone-200 p-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-2">固定メッセージ</p>
+            <p className="text-xs text-stone-600 leading-relaxed">{religion.pinnedMessage}</p>
           </div>
         )}
       </div>

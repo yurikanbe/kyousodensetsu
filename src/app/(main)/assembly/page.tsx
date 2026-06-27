@@ -29,35 +29,35 @@ export default function AssemblyListPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold text-gray-800 mb-4">💬 集会一覧</h1>
+      <h1 className="text-base font-bold text-stone-900 mb-4 tracking-wide">集会一覧</h1>
       {religions.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-          <p className="text-4xl mb-3">💬</p>
-          <p className="text-gray-500 text-sm">
+        <div className="bg-white border border-stone-200 p-10 text-center">
+          <p className="text-3xl mb-3 text-stone-300">💬</p>
+          <p className="text-stone-500 text-sm mb-4">
             まだ参加している宗教がありません。宗教に入信して集会に参加しましょう。
           </p>
           <Link href="/search">
-            <button className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-2 rounded-xl text-sm transition-colors">
+            <button className="bg-stone-900 hover:bg-stone-800 text-white font-medium px-6 py-2 text-sm tracking-wide transition-colors">
               宗教を探す
             </button>
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {religions.map((religion) => (
             <Link key={religion.id} href={`/religion/${religion.id}/assembly`}>
-              <div className="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-4 hover:shadow-sm hover:border-purple-200 transition-all cursor-pointer">
-                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl shrink-0">
+              <div className="bg-white border border-stone-200 p-4 flex items-center gap-4 hover:border-stone-400 transition-colors cursor-pointer">
+                <div className="w-11 h-11 bg-stone-100 flex items-center justify-center text-2xl shrink-0">
                   {religion.icon}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-800">{religion.name}</p>
+                  <p className="font-medium text-stone-900">{religion.name}</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                    <span className="text-xs text-gray-500">集会に参加する</span>
+                    <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+                    <span className="text-xs text-stone-500">集会に参加する</span>
                   </div>
                 </div>
-                <span className="text-purple-600 text-sm font-medium">参加する →</span>
+                <span className="text-stone-700 text-xs font-medium tracking-wide">参加する →</span>
               </div>
             </Link>
           ))}

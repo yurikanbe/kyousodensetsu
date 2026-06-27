@@ -61,9 +61,9 @@ export default function PostComposer() {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-4">
+    <div className="bg-white border border-stone-200 p-4">
       <div className="flex gap-3">
-        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl shrink-0">
+        <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg shrink-0">
           {user.avatarIcon}
         </div>
         <div className="flex-1">
@@ -72,13 +72,13 @@ export default function PostComposer() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             rows={2}
-            className="w-full resize-none text-gray-800 placeholder-gray-400 text-sm focus:outline-none"
+            className="w-full resize-none text-stone-900 placeholder-stone-400 text-sm focus:outline-none"
           />
-          <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+          <div className="flex items-center justify-between mt-2 pt-2 border-t border-stone-100">
             <select
               value={selectedReligionId}
               onChange={(e) => setSelectedReligionId(e.target.value)}
-              className="text-xs text-gray-500 border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-purple-400"
+              className="text-xs text-stone-600 border border-stone-200 px-2 py-1 focus:outline-none focus:border-stone-400 bg-white"
             >
               <option value="">宗教を選択</option>
               {religions.map((r) => (
@@ -90,7 +90,7 @@ export default function PostComposer() {
             <button
               onClick={handleSubmit}
               disabled={!text.trim() || !selectedReligionId || isSubmitting}
-              className="px-4 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-medium rounded-full transition-colors"
+              className="px-5 py-1.5 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-medium tracking-wide transition-colors"
             >
               {isSubmitting ? "投稿中..." : "投稿"}
             </button>

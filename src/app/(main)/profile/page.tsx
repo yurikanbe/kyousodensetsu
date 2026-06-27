@@ -68,29 +68,29 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <div className="bg-linear-to-br from-purple-700 to-indigo-800 rounded-xl p-6 text-white">
+      <div className="bg-stone-900 p-6 text-white">
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-4xl">
+          <div className="w-18 h-18 rounded-full bg-white/10 flex items-center justify-center text-4xl w-20 h-20">
             {user.avatarIcon}
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{user.displayName}</h1>
-            <p className="text-purple-200 text-sm">信者レベル Lv.{user.level}</p>
-            <div className="flex items-center gap-3 mt-2 text-sm text-purple-200">
+            <h1 className="text-xl font-bold tracking-wide">{user.displayName}</h1>
+            <p className="text-stone-400 text-sm mt-0.5">信者レベル Lv.{user.level}</p>
+            <div className="flex items-center gap-3 mt-2 text-sm text-stone-400">
               <span>🪙 {user.coins.toLocaleString()} コイン</span>
-              <span>🏛️ {user.joinedReligionIds.length} 宗教</span>
+              <span>{user.joinedReligionIds.length} 宗教</span>
             </div>
           </div>
         </div>
 
         <div className="mt-4">
-          <div className="flex justify-between text-xs text-purple-200 mb-1">
+          <div className="flex justify-between text-xs text-stone-500 mb-1">
             <span>経験値</span>
             <span>{user.xp} / {user.xpToNext} XP</span>
           </div>
-          <div className="w-full bg-white/20 rounded-full h-2.5">
+          <div className="w-full bg-white/10 h-1">
             <div
-              className="bg-white h-2.5 rounded-full transition-all"
+              className="bg-white h-1 transition-all"
               style={{ width: `${xpPercent}%` }}
             />
           </div>
@@ -99,33 +99,32 @@ export default function ProfilePage() {
 
       <div className="grid grid-cols-3 gap-3">
         {[
-          { label: "信仰中の宗教", value: user.joinedReligionIds.length, icon: "🏛️" },
-          { label: "レベル", value: user.level, icon: "⭐" },
-          { label: "所持コイン", value: user.coins.toLocaleString(), icon: "🪙" },
+          { label: "信仰中の宗教", value: user.joinedReligionIds.length },
+          { label: "レベル", value: user.level },
+          { label: "所持コイン", value: user.coins.toLocaleString() },
         ].map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl border border-gray-200 p-4 text-center">
-            <p className="text-2xl mb-1">{stat.icon}</p>
-            <p className="text-xl font-bold text-gray-800">{stat.value}</p>
-            <p className="text-xs text-gray-500">{stat.label}</p>
+          <div key={stat.label} className="bg-white border border-stone-200 p-4 text-center">
+            <p className="text-xl font-bold text-stone-900">{stat.value}</p>
+            <p className="text-xs text-stone-500 mt-1">{stat.label}</p>
           </div>
         ))}
       </div>
 
       {joinedReligions.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <h2 className="font-bold text-gray-800 mb-3">🏛️ 信仰中の宗教</h2>
-          <div className="space-y-2">
+        <div className="bg-white border border-stone-200 p-4">
+          <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">信仰中の宗教</p>
+          <div className="space-y-1">
             {joinedReligions.map((rel) => (
               <Link key={rel.id} href={`/religion/${rel.id}`}>
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl">
+                <div className="flex items-center gap-3 p-3 hover:bg-stone-50 cursor-pointer transition-colors">
+                  <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg">
                     {rel.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{rel.name}</p>
-                    <p className="text-xs text-gray-500">👥 {rel.memberCount.toLocaleString()}人 · Lv.{rel.level}</p>
+                    <p className="text-sm font-medium text-stone-900 truncate">{rel.name}</p>
+                    <p className="text-xs text-stone-500">👥 {rel.memberCount.toLocaleString()}人 · Lv.{rel.level}</p>
                   </div>
-                  <span className="text-gray-400 text-xs">→</span>
+                  <span className="text-stone-400 text-xs">→</span>
                 </div>
               </Link>
             ))}
@@ -133,19 +132,19 @@ export default function ProfilePage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
-        <h2 className="font-bold text-gray-800 mb-1">🎯 アバターアイコン変更</h2>
-        <p className="text-xs text-gray-400 mb-3">コイン200枚でアイコンを変更できます（現在: {user.coins}枚）</p>
+      <div className="bg-white border border-stone-200 p-4">
+        <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-1">アバターアイコン変更</p>
+        <p className="text-xs text-stone-400 mb-3">コイン200枚で変更できます（現在: {user.coins}枚）</p>
         <div className="grid grid-cols-10 gap-2">
           {RELIGION_ICONS.map((icon) => (
             <button
               key={icon}
               onClick={() => handleAvatarChange(icon)}
               disabled={user.coins < 200 && user.avatarIcon !== icon}
-              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xl transition-all hover:scale-110 disabled:opacity-40 ${
+              className={`w-9 h-9 flex items-center justify-center text-xl transition-all hover:scale-110 disabled:opacity-40 ${
                 user.avatarIcon === icon
-                  ? "bg-purple-600 ring-2 ring-purple-400"
-                  : "bg-gray-100 hover:bg-gray-200"
+                  ? "bg-stone-900 ring-2 ring-stone-400"
+                  : "bg-stone-100 hover:bg-stone-200"
               }`}
             >
               {icon}
@@ -155,17 +154,17 @@ export default function ProfilePage() {
       </div>
 
       {myPosts.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <h2 className="font-bold text-gray-800 mb-3">📝 自分の投稿</h2>
-          <div className="space-y-3">
+        <div className="bg-white border border-stone-200 p-4">
+          <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">自分の投稿</p>
+          <div className="space-y-2">
             {myPosts.map((post) => (
-              <div key={post.id} className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+              <div key={post.id} className="p-3 bg-stone-50 border border-stone-100">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-medium text-gray-500">{post.type}</span>
-                  <span className="text-xs text-gray-400">· {post.religionName}</span>
+                  <span className="text-xs font-medium text-stone-600">{post.type}</span>
+                  <span className="text-xs text-stone-400">· {post.religionName}</span>
                 </div>
-                <p className="text-sm text-gray-700 line-clamp-2">{post.content}</p>
-                <div className="flex gap-3 mt-2 text-xs text-gray-400">
+                <p className="text-sm text-stone-800 line-clamp-2">{post.content}</p>
+                <div className="flex gap-3 mt-2 text-xs text-stone-400">
                   <span>🙏 {post.prayerCount}</span>
                   <span>💬 {post.replyCount}</span>
                 </div>
@@ -178,7 +177,7 @@ export default function ProfilePage() {
       <div className="pb-4">
         <button
           onClick={handleLogout}
-          className="w-full py-3 border border-red-200 text-red-500 hover:bg-red-50 rounded-xl text-sm font-medium transition-colors"
+          className="w-full py-3 border border-stone-200 text-stone-500 hover:bg-stone-50 text-sm tracking-wide transition-colors"
         >
           ログアウト
         </button>

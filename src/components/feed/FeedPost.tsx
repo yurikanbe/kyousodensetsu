@@ -17,10 +17,10 @@ function timeAgo(date: Date): string {
 }
 
 const POST_TYPE_LABEL: Record<Post["type"], { label: string; color: string }> = {
-  啓示: { label: "教祖からの啓示", color: "bg-purple-100 text-purple-700" },
-  経典: { label: "新しい経典を公開", color: "bg-blue-100 text-blue-700" },
-  ミッション達成: { label: "ミッション達成", color: "bg-green-100 text-green-700" },
-  お知らせ: { label: "お知らせ", color: "bg-amber-100 text-amber-700" },
+  啓示: { label: "教祖からの啓示", color: "bg-stone-900 text-white" },
+  経典: { label: "新しい経典を公開", color: "bg-stone-100 text-stone-700 border border-stone-300" },
+  ミッション達成: { label: "ミッション達成", color: "bg-stone-100 text-stone-700 border border-stone-300" },
+  お知らせ: { label: "お知らせ", color: "bg-stone-50 text-stone-600 border border-stone-200" },
 };
 
 export default function FeedPost({ post }: FeedPostProps) {
@@ -51,85 +51,86 @@ export default function FeedPost({ post }: FeedPostProps) {
   };
 
   return (
-    <article className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm transition-shadow">
+    <article className="bg-white border border-stone-200 p-5 hover:border-stone-300 transition-colors">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl shrink-0">
+        <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg shrink-0">
           {post.authorIcon}
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-semibold text-gray-800 text-sm">{post.authorName}</span>
+            <span className="font-semibold text-stone-900 text-sm">{post.authorName}</span>
             <Link href={`/religion/${post.religionId}`}>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-600 text-white text-xs rounded-full font-medium hover:bg-purple-700 transition-colors cursor-pointer">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-900 text-white text-xs font-medium hover:bg-stone-800 transition-colors cursor-pointer">
                 {post.religionIcon} {post.religionName}
               </span>
             </Link>
+            <span className={`text-xs px-2 py-0.5 font-medium ${typeInfo.color}`}>
+              {typeInfo.label}
+            </span>
           </div>
-          <p className="text-xs text-gray-400 mt-0.5">
-            {timeAgo(post.createdAt)} · {typeInfo.label}
-          </p>
+          <p className="text-xs text-stone-400 mt-0.5">{timeAgo(post.createdAt)}</p>
         </div>
       </div>
 
-      <div className="mt-3 whitespace-pre-wrap text-gray-800 text-sm leading-relaxed">
+      <div className="mt-3 whitespace-pre-wrap text-stone-800 text-sm leading-relaxed">
         {post.type === "経典" && post.scriptureTitle && (
-          <div className="mb-2 p-3 bg-blue-50 rounded-lg border border-blue-100">
-            <p className="text-xs text-blue-600 font-semibold mb-1">📖 {post.scriptureTitle}</p>
+          <div className="mb-2 p-3 bg-stone-50 border border-stone-200 border-l-2 border-l-stone-900">
+            <p className="text-xs text-stone-600 font-medium mb-1">📖 {post.scriptureTitle}</p>
           </div>
         )}
         {post.content}
         {post.coinsEarned && (
-          <p className="mt-2 text-amber-600 font-semibold text-sm">
-            🪙 {post.coinsEarned}コイン獲得！
+          <p className="mt-2 text-stone-600 font-medium text-sm">
+            🪙 {post.coinsEarned}コイン獲得
           </p>
         )}
       </div>
 
       {post.type === "経典" && (
-        <button className="mt-2 text-sm text-purple-600 hover:text-purple-800 flex items-center gap-1">
-          📖 経典を読む →
+        <button className="mt-2 text-xs text-stone-500 hover:text-stone-900 flex items-center gap-1 tracking-wide transition-colors">
+          経典を読む →
         </button>
       )}
 
-      <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-1 flex-wrap">
+      <div className="mt-4 pt-3 border-t border-stone-100 flex items-center gap-0.5 flex-wrap">
         <button
           onClick={handlePray}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
             hasPrayed
-              ? "bg-purple-100 text-purple-700 font-semibold"
-              : "text-gray-500 hover:bg-gray-100"
+              ? "bg-stone-900 text-white font-medium"
+              : "text-stone-500 hover:bg-stone-100 hover:text-stone-900"
           }`}
         >
           🙏 {prayerCount.toLocaleString()} お祈り
         </button>
         <button
           onClick={() => setShowReply(!showReply)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors"
         >
           💬 {post.replyCount} 返信
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors">
+        <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors">
           📢 {post.missionaryCount} 布教
         </button>
         <button
           onClick={() => setShowOffering(!showOffering)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors"
         >
           🪙 お布施
         </button>
       </div>
 
       {showOffering && (
-        <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-100">
-          <p className="text-sm font-semibold text-amber-800 mb-2">お布施する金額を選んでください</p>
+        <div className="mt-3 p-3 bg-stone-50 border border-stone-200">
+          <p className="text-xs font-medium text-stone-700 mb-2 tracking-wide">お布施する金額を選んでください</p>
           <div className="flex gap-2 flex-wrap">
             {[10, 50, 100, 500].map((amount) => (
               <button
                 key={amount}
                 onClick={() => handleOffering(amount)}
-                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-medium rounded-lg transition-colors"
+                className="px-3 py-1.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium transition-colors"
               >
-                🪙 {amount}
+                {amount} コイン
               </button>
             ))}
           </div>
@@ -143,11 +144,11 @@ export default function FeedPost({ post }: FeedPostProps) {
             placeholder="返信を入力..."
             value={replyText}
             onChange={(e) => setReplyText(e.target.value)}
-            className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+            className="flex-1 border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:border-stone-400"
           />
           <button
             onClick={() => { setReplyText(""); setShowReply(false); }}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
+            className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-sm transition-colors"
           >
             送信
           </button>

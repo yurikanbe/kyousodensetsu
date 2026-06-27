@@ -20,9 +20,9 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { Religion, Member, Mission } from "@/types";
 
 const ROLE_COLOR: Record<string, string> = {
-  教祖: "text-amber-600",
-  副教祖: "text-purple-600",
-  信者: "text-gray-600",
+  教祖: "text-stone-900 font-bold",
+  副教祖: "text-stone-700",
+  信者: "text-stone-500",
 };
 
 export default function ReligionDetailPage({
@@ -113,8 +113,8 @@ export default function ReligionDetailPage({
 
   if (!religion) {
     return (
-      <div className="flex items-center justify-center py-20 text-gray-400">
-        <p>読み込み中...</p>
+      <div className="flex items-center justify-center py-20 text-stone-400">
+        <p className="text-sm tracking-widest">読み込み中...</p>
       </div>
     );
   }
@@ -123,32 +123,32 @@ export default function ReligionDetailPage({
 
   return (
     <div className="max-w-4xl mx-auto space-y-4">
-      <div className="bg-linear-to-r from-purple-600 to-purple-800 rounded-xl p-5 text-white">
+      <div className="bg-stone-900 p-6 text-white">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 rounded-xl bg-white/20 flex items-center justify-center text-4xl shrink-0">
+          <div className="w-16 h-16 bg-white/10 flex items-center justify-center text-4xl shrink-0">
             {religion.icon}
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-xl font-bold">{religion.name}</h1>
-            <div className="flex items-center gap-4 mt-2 flex-wrap text-sm text-purple-200">
+            <h1 className="text-xl font-bold tracking-wide">{religion.name}</h1>
+            <div className="flex items-center gap-4 mt-2 flex-wrap text-sm text-stone-400">
               <span>👥 {religion.memberCount.toLocaleString()}人</span>
               <span>📖 {religion.scriptureCount}経典</span>
               <span>🎵 {religion.hymnCount}賛歌</span>
-              <span>👑 Lv.{religion.level}</span>
+              <span>Lv.{religion.level}</span>
             </div>
           </div>
           <div className="shrink-0">
             {isJoined ? (
               <button
                 onClick={handleLeave}
-                className="px-4 py-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium rounded-lg transition-colors"
+                className="px-4 py-2 border border-white/30 hover:bg-white/10 text-white text-xs font-medium tracking-wide transition-colors"
               >
                 棄教する
               </button>
             ) : (
               <button
                 onClick={handleJoin}
-                className="px-4 py-2 bg-white text-purple-700 hover:bg-purple-50 text-sm font-bold rounded-lg transition-colors"
+                className="px-4 py-2 bg-white text-stone-900 hover:bg-stone-100 text-xs font-bold tracking-wide transition-colors"
               >
                 入信する
               </button>
@@ -159,49 +159,49 @@ export default function ReligionDetailPage({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h2 className="font-bold text-gray-800 mb-2">🏛️ 教祖レベル進捗</h2>
-            <div className="w-full bg-gray-200 rounded-full h-3 mb-1">
+          <div className="bg-white border border-stone-200 p-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">レベル進捗</p>
+            <div className="w-full bg-stone-100 h-1.5 mb-1">
               <div
-                className="bg-purple-600 h-3 rounded-full transition-all"
+                className="bg-stone-900 h-1.5 transition-all"
                 style={{ width: `${levelPercent}%` }}
               />
             </div>
-            <p className="text-xs text-gray-400 text-right">
-              次のレベルまで: {religion.level * 120} / {(religion.level + 1) * 120} XP
+            <p className="text-xs text-stone-400 text-right">
+              {religion.level * 120} / {(religion.level + 1) * 120} XP
             </p>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h2 className="font-bold text-gray-800 mb-3">📜 教義</h2>
-            <p className="text-gray-700 text-sm leading-relaxed border-l-4 border-purple-400 pl-4">
+          <div className="bg-white border border-stone-200 p-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">教義</p>
+            <p className="text-stone-800 text-sm leading-relaxed border-l-2 border-stone-900 pl-4">
               {religion.doctrine}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h2 className="font-bold text-gray-800 mb-3">⚡ アクション</h2>
-            <div className="grid grid-cols-2 gap-3">
+          <div className="bg-white border border-stone-200 p-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">アクション</p>
+            <div className="grid grid-cols-2 gap-2">
               <Link href={`/religion/${id}/assembly`}>
-                <button className="w-full flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-purple-50 border border-gray-200 hover:border-purple-300 rounded-xl transition-colors">
-                  <span className="text-2xl">👥</span>
-                  <span className="text-sm font-medium text-gray-700">集会に参加</span>
+                <button className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors">
+                  <span className="text-2xl">💬</span>
+                  <span className="text-xs font-medium text-stone-700 tracking-wide">集会に参加</span>
                 </button>
               </Link>
               <button
                 onClick={() => setShowOfferingModal(true)}
-                className="w-full flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-amber-50 border border-gray-200 hover:border-amber-300 rounded-xl transition-colors"
+                className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors"
               >
-                <span className="text-2xl">💰</span>
-                <span className="text-sm font-medium text-gray-700">お布施する</span>
+                <span className="text-2xl">🪙</span>
+                <span className="text-xs font-medium text-stone-700 tracking-wide">お布施する</span>
               </button>
-              <button className="w-full flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-xl transition-colors">
+              <button className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors">
                 <span className="text-2xl">📖</span>
-                <span className="text-sm font-medium text-gray-700">経典を読む</span>
+                <span className="text-xs font-medium text-stone-700 tracking-wide">経典を読む</span>
               </button>
-              <button className="w-full flex flex-col items-center gap-2 p-4 bg-gray-50 hover:bg-green-50 border border-gray-200 hover:border-green-300 rounded-xl transition-colors">
+              <button className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors">
                 <span className="text-2xl">🎵</span>
-                <span className="text-sm font-medium text-gray-700">賛歌を歌う</span>
+                <span className="text-xs font-medium text-stone-700 tracking-wide">賛歌を歌う</span>
               </button>
             </div>
           </div>
@@ -209,43 +209,43 @@ export default function ReligionDetailPage({
 
         <div className="space-y-4">
           {missions.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <h2 className="font-bold text-gray-800 mb-3">📋 今日のミッション</h2>
-              <div className="space-y-3">
+            <div className="bg-white border border-stone-200 p-4">
+              <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">今日のミッション</p>
+              <div className="space-y-2">
                 {missions.slice(0, 3).map((mission) => (
                   <div
                     key={mission.id}
-                    className={`p-3 rounded-lg border ${
+                    className={`p-3 border ${
                       mission.completed
-                        ? "bg-green-50 border-green-200"
-                        : "bg-gray-50 border-gray-200"
+                        ? "bg-stone-50 border-stone-300"
+                        : "bg-white border-stone-200"
                     }`}
                   >
-                    <p className={`text-sm font-medium ${mission.completed ? "line-through text-gray-400" : "text-gray-800"}`}>
-                      {mission.completed ? "✅" : "⬜"} {mission.title}
+                    <p className={`text-sm font-medium ${mission.completed ? "line-through text-stone-400" : "text-stone-800"}`}>
+                      {mission.completed ? "✓" : "○"} {mission.title}
                     </p>
-                    <p className="text-xs text-amber-600 mt-1">報酬: 🪙 {mission.reward}コイン</p>
+                    <p className="text-xs text-stone-500 mt-1">報酬: {mission.reward} コイン</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h2 className="font-bold text-gray-800 mb-3">👥 主要メンバー</h2>
+          <div className="bg-white border border-stone-200 p-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">主要メンバー</p>
             {members.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-2">まだメンバーがいません</p>
+              <p className="text-xs text-stone-400 text-center py-2">まだメンバーがいません</p>
             ) : (
               <div className="space-y-3">
                 {members.map((member) => (
                   <div key={member.userId} className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-purple-100 flex items-center justify-center text-lg shrink-0">
+                    <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-base shrink-0">
                       {member.avatarIcon}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-800">{member.displayName}</p>
+                      <p className="text-sm font-medium text-stone-900">{member.displayName}</p>
                       <p className={`text-xs ${ROLE_COLOR[member.role]}`}>
-                        {member.role} | Lv.{member.level}
+                        {member.role} · Lv.{member.level}
                       </p>
                     </div>
                   </div>
@@ -257,32 +257,32 @@ export default function ReligionDetailPage({
       </div>
 
       {showOfferingModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-            <h3 className="text-lg font-bold text-gray-800 mb-1">🪙 お布施する</h3>
-            <p className="text-sm text-gray-500 mb-4">{religion.name} への信仰を示しましょう</p>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white p-6 w-full max-w-sm">
+            <h3 className="text-base font-bold text-stone-900 mb-1 tracking-wide">お布施する</h3>
+            <p className="text-xs text-stone-500 mb-5">{religion.name} への信仰を示しましょう</p>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">金額</label>
+              <label className="block text-xs font-medium text-stone-700 mb-2 tracking-wide">金額</label>
               <input
                 type="number"
                 value={offeringAmount}
                 onChange={(e) => setOfferingAmount(Number(e.target.value))}
                 min={1}
                 max={user?.coins ?? 0}
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-400"
               />
-              <p className="text-xs text-gray-400 mt-1">所持コイン: 🪙 {user?.coins.toLocaleString()}</p>
+              <p className="text-xs text-stone-400 mt-1">所持コイン: {user?.coins.toLocaleString()}</p>
             </div>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowOfferingModal(false)}
-                className="flex-1 py-2.5 border border-gray-200 text-gray-600 rounded-xl text-sm hover:bg-gray-50 transition-colors"
+                className="flex-1 py-2.5 border border-stone-200 text-stone-600 text-sm hover:bg-stone-50 transition-colors"
               >
                 キャンセル
               </button>
               <button
                 onClick={handleOffering}
-                className="flex-1 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-sm transition-colors"
+                className="flex-1 py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-sm transition-colors"
               >
                 お布施する
               </button>

@@ -30,56 +30,50 @@ export default function RightPanel() {
 
   return (
     <aside className="w-72 shrink-0 hidden xl:block">
-      <div className="sticky top-16 space-y-4 py-4">
-        <div className="bg-white rounded-xl border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-gray-800">🏛️ あなたのステータス</h3>
-          </div>
+      <div className="sticky top-16 space-y-3 py-4">
+        <div className="bg-white border border-stone-200 p-4">
+          <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">あなたのステータス</p>
           <div className="flex flex-col items-center py-3">
-            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center text-3xl mb-2">
+            <div className="w-14 h-14 rounded-full bg-stone-100 flex items-center justify-center text-3xl mb-2">
               {user.avatarIcon}
             </div>
-            <p className="font-bold text-gray-800">{user.displayName}</p>
-            <p className="text-sm text-gray-500 mb-3">信者レベル Lv.{user.level}</p>
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-1">
+            <p className="font-bold text-stone-900">{user.displayName}</p>
+            <p className="text-xs text-stone-500 mb-3">信者レベル Lv.{user.level}</p>
+            <div className="w-full bg-stone-100 h-1 mb-1">
               <div
-                className="bg-purple-600 h-2 rounded-full transition-all"
+                className="bg-stone-900 h-1 transition-all"
                 style={{ width: `${xpPercent}%` }}
               />
             </div>
-            <p className="text-xs text-gray-400 self-end">
-              次のレベルまで: {user.xp} / {user.xpToNext} XP
+            <p className="text-xs text-stone-400 self-end">
+              {user.xp} / {user.xpToNext} XP
             </p>
           </div>
-          <div className="border-t border-gray-100 pt-3 mt-2 flex justify-between text-sm">
-            <div>
-              <span className="text-amber-500 mr-1">🪙</span>
-              <span className="text-gray-600">所持コイン</span>
+          <div className="border-t border-stone-100 pt-3 mt-2 space-y-2">
+            <div className="flex justify-between text-sm">
+              <span className="text-stone-500">所持コイン</span>
+              <span className="font-bold text-stone-900">{user.coins.toLocaleString()}</span>
             </div>
-            <span className="font-bold text-amber-600">{user.coins.toLocaleString()}</span>
-          </div>
-          <div className="flex justify-between text-sm mt-2">
-            <div>
-              <span className="mr-1">🏛️</span>
-              <span className="text-gray-600">信仰中</span>
+            <div className="flex justify-between text-sm">
+              <span className="text-stone-500">信仰中</span>
+              <span className="font-bold text-stone-900">{user.joinedReligionIds.length} 宗教</span>
             </div>
-            <span className="font-bold text-gray-800">{user.joinedReligionIds.length} 宗教</span>
           </div>
         </div>
 
         {recommendedReligions.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
-            <h3 className="font-bold text-gray-800 mb-3">🔥 おすすめ宗教</h3>
-            <div className="space-y-3">
+          <div className="bg-white border border-stone-200 p-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">おすすめ宗教</p>
+            <div className="space-y-2">
               {recommendedReligions.map((rel) => (
                 <Link key={rel.id} href={`/religion/${rel.id}`}>
-                  <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-xl shrink-0">
+                  <div className="flex items-center gap-3 p-2 hover:bg-stone-50 cursor-pointer transition-colors">
+                    <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-lg shrink-0">
                       {rel.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-800 truncate">{rel.name}</p>
-                      <p className="text-xs text-gray-500">{rel.memberCount.toLocaleString()}人</p>
+                      <p className="text-sm font-medium text-stone-900 truncate">{rel.name}</p>
+                      <p className="text-xs text-stone-500">{rel.memberCount.toLocaleString()}人</p>
                     </div>
                   </div>
                 </Link>

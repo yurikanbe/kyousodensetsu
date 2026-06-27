@@ -34,25 +34,25 @@ export default function SearchPage() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <h1 className="text-xl font-bold text-gray-800 mb-4">🔍 宗教を探す</h1>
+      <h1 className="text-base font-bold text-stone-900 mb-4 tracking-wide">宗教を探す</h1>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
+      <div className="bg-white border border-stone-200 p-4 mb-4">
         <input
           type="text"
           placeholder="宗教名・教義・教祖名で検索..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 mb-3"
+          className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-400 mb-3"
         />
         <div className="flex gap-2 flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 text-xs font-medium tracking-wide transition-colors ${
                 selectedCategory === cat
-                  ? "bg-purple-600 text-white"
-                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  ? "bg-stone-900 text-white"
+                  : "bg-stone-100 text-stone-600 hover:bg-stone-200"
               }`}
             >
               {cat}
@@ -61,27 +61,27 @@ export default function SearchPage() {
         </div>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-2">
         {results.map((religion) => (
           <Link key={religion.id} href={`/religion/${religion.id}`}>
-            <div className="bg-white rounded-xl border border-gray-200 p-4 hover:shadow-sm hover:border-purple-200 transition-all cursor-pointer">
+            <div className="bg-white border border-stone-200 p-4 hover:border-stone-400 transition-colors cursor-pointer">
               <div className="flex items-start gap-3">
-                <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-2xl shrink-0">
+                <div className="w-11 h-11 bg-stone-100 flex items-center justify-center text-2xl shrink-0">
                   {religion.icon}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold text-gray-800">{religion.name}</h3>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                    <h3 className="font-semibold text-stone-900">{religion.name}</h3>
+                    <span className="text-xs bg-stone-100 text-stone-600 px-2 py-0.5">
                       {religion.category}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-0.5">教祖: {religion.founderName} · Lv.{religion.level}</p>
-                  <p className="text-sm text-gray-600 mt-1 line-clamp-2">{religion.doctrine}</p>
-                  <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+                  <p className="text-xs text-stone-500 mt-0.5">教祖: {religion.founderName} · Lv.{religion.level}</p>
+                  <p className="text-sm text-stone-600 mt-1 line-clamp-2">{religion.doctrine}</p>
+                  <div className="flex items-center gap-3 mt-2 text-xs text-stone-400">
                     <span>👥 {religion.memberCount.toLocaleString()}人</span>
                     <span>📖 {religion.scriptureCount}経典</span>
-                    <span>🪙 {religion.totalOfferings.toLocaleString()}お布施</span>
+                    <span>🪙 {religion.totalOfferings.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
@@ -89,15 +89,15 @@ export default function SearchPage() {
           </Link>
         ))}
         {results.length === 0 && allReligions.length > 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <p className="text-4xl mb-3">🔍</p>
-            <p>該当する宗教が見つかりませんでした</p>
+          <div className="text-center py-12 text-stone-400">
+            <p className="text-3xl mb-3">◈</p>
+            <p className="text-sm">該当する宗教が見つかりませんでした</p>
           </div>
         )}
         {allReligions.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <p className="text-4xl mb-3">🏛️</p>
-            <p>まだ宗教がありません</p>
+          <div className="text-center py-12 text-stone-400">
+            <p className="text-3xl mb-3">✦</p>
+            <p className="text-sm">まだ宗教がありません</p>
           </div>
         )}
       </div>

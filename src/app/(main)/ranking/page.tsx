@@ -14,7 +14,7 @@ const SORT_LABELS: Record<SortKey, string> = {
   weeklyGrowth: "急上昇",
 };
 
-const RANK_STYLES = ["bg-amber-400", "bg-gray-400", "bg-amber-700"];
+const RANK_STYLES = ["bg-stone-900", "bg-stone-500", "bg-stone-400"];
 
 export default function RankingPage() {
   const [sortKey, setSortKey] = useState<SortKey>("memberCount");
@@ -45,32 +45,30 @@ export default function RankingPage() {
     <div className="max-w-4xl mx-auto">
       <div className="flex gap-4">
         <div className="flex-1 min-w-0">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
-            <h1 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              🏆 宗教ランキング
-            </h1>
+          <div className="bg-white border border-stone-200 p-4 mb-4">
+            <h1 className="text-base font-bold text-stone-900 mb-4 tracking-wide">宗教ランキング</h1>
 
             <div className="flex gap-2 flex-wrap mb-4">
               {(Object.keys(SORT_LABELS) as SortKey[]).map((key) => (
                 <button
                   key={key}
                   onClick={() => setSortKey(key)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                  className={`px-3 py-1.5 text-xs font-medium tracking-wide transition-colors ${
                     sortKey === key
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-stone-900 text-white"
+                      : "bg-stone-100 text-stone-600 hover:bg-stone-200"
                   }`}
                 >
-                  {key === "weeklyGrowth" ? "🔥" : ""} {SORT_LABELS[key]}
+                  {SORT_LABELS[key]}
                 </button>
               ))}
             </div>
 
             <div className="space-y-2">
               {sorted.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
-                  <p className="text-4xl mb-3">🏆</p>
-                  <p>まだ宗教がありません</p>
+                <div className="text-center py-12 text-stone-400">
+                  <p className="text-4xl mb-3">◈</p>
+                  <p className="text-sm">まだ宗教がありません</p>
                 </div>
               ) : (
                 sorted.map((religion, index) => (
@@ -87,31 +85,29 @@ export default function RankingPage() {
           </div>
         </div>
 
-        <div className="w-56 shrink-0 hidden lg:block">
-          <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
-            <h3 className="font-bold text-gray-800 mb-3 text-sm">🔍 宗教を探す</h3>
+        <div className="w-52 shrink-0 hidden lg:block">
+          <div className="bg-white border border-stone-200 p-4 mb-4">
+            <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">宗教を探す</p>
             <input
               type="text"
               placeholder="キーワードで検索..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="w-full border border-stone-200 px-3 py-2 text-sm focus:outline-none focus:border-stone-400"
             />
           </div>
 
           {trending.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              <h3 className="font-bold text-gray-800 mb-3 text-sm flex items-center gap-1">
-                🔥 急上昇
-              </h3>
+            <div className="bg-white border border-stone-200 p-4">
+              <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">急上昇</p>
               <div className="space-y-3">
                 {trending.map((rel, i) => (
                   <Link key={rel.id} href={`/religion/${rel.id}`}>
-                    <div className="flex items-start gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-                      <span className="text-xs font-bold text-orange-500 w-4">#{i + 1}</span>
+                    <div className="flex items-start gap-2 cursor-pointer hover:opacity-70 transition-opacity">
+                      <span className="text-xs font-bold text-stone-500 w-4">#{i + 1}</span>
                       <div>
-                        <p className="text-xs font-semibold text-gray-800 leading-tight">{rel.name}</p>
-                        <p className="text-xs text-orange-500">+{rel.weeklyGrowth.toLocaleString()} 今週</p>
+                        <p className="text-xs font-semibold text-stone-900 leading-tight">{rel.name}</p>
+                        <p className="text-xs text-stone-500">+{rel.weeklyGrowth.toLocaleString()} 今週</p>
                       </div>
                     </div>
                   </Link>
@@ -139,37 +135,37 @@ function RankingItem({
   const VALUE_DISPLAY: Record<SortKey, string> = {
     memberCount: `${religion.memberCount.toLocaleString()} 人`,
     level: `Lv.${religion.level}`,
-    totalOfferings: `🪙 ${religion.totalOfferings.toLocaleString()}`,
+    totalOfferings: `${religion.totalOfferings.toLocaleString()} コイン`,
     weeklyGrowth: `+${religion.weeklyGrowth.toLocaleString()} 今週`,
   };
 
   return (
     <Link href={`/religion/${religion.id}`}>
       <div
-        className={`flex items-center gap-3 p-4 rounded-xl border transition-all cursor-pointer hover:shadow-sm ${
+        className={`flex items-center gap-3 p-3 border transition-all cursor-pointer ${
           rank <= 3
-            ? "border-amber-200 bg-amber-50"
-            : "border-gray-100 bg-gray-50 hover:bg-white"
+            ? "border-stone-300 bg-stone-50 hover:bg-white"
+            : "border-stone-100 bg-stone-50 hover:bg-white"
         }`}
       >
         <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm shrink-0 ${
-            rankStyle || "bg-gray-300"
+          className={`w-7 h-7 flex items-center justify-center text-white font-bold text-xs shrink-0 ${
+            rankStyle || "bg-stone-300"
           }`}
         >
           {rank}
         </div>
-        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-2xl shrink-0">
+        <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-xl shrink-0">
           {religion.icon}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-800 text-sm truncate">{religion.name}</p>
-          <p className="text-xs text-gray-500 truncate">
-            教祖: {religion.founderName} | Lv.{religion.level}
+          <p className="font-semibold text-stone-900 text-sm truncate">{religion.name}</p>
+          <p className="text-xs text-stone-500 truncate">
+            教祖: {religion.founderName} · Lv.{religion.level}
           </p>
         </div>
         <div className="shrink-0 text-right">
-          <p className="font-bold text-purple-600 text-sm">{VALUE_DISPLAY[sortKey]}</p>
+          <p className="font-bold text-stone-900 text-sm">{VALUE_DISPLAY[sortKey]}</p>
         </div>
       </div>
     </Link>
