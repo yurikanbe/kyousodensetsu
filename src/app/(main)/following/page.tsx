@@ -34,10 +34,9 @@ export default function FollowingPage() {
       <h1 className="text-base font-bold text-stone-900 mb-4 tracking-wide">信仰中の宗教</h1>
       {joinedReligions.length === 0 ? (
         <div className="bg-white border border-stone-200 p-10 text-center">
-          <p className="text-3xl mb-3 text-stone-300">◈</p>
           <p className="text-stone-500 text-sm mb-4">まだ信仰している宗教がありません</p>
           <Link href="/search">
-            <button className="bg-stone-900 hover:bg-stone-800 text-white font-medium px-6 py-2 text-sm tracking-wide transition-colors">
+            <button className="bg-stone-900 hover:bg-stone-800 text-white font-medium px-6 py-2 text-xs tracking-widest transition-colors">
               宗教を探す
             </button>
           </Link>
@@ -48,15 +47,15 @@ export default function FollowingPage() {
             <Link key={religion.id} href={`/religion/${religion.id}`}>
               <div className="bg-white border border-stone-200 p-5 hover:border-stone-400 transition-colors cursor-pointer">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-stone-100 flex items-center justify-center text-3xl shrink-0">
-                    {religion.icon}
+                  <div className="w-12 h-12 bg-stone-100 flex items-center justify-center text-lg font-bold text-stone-700 shrink-0">
+                    {religion.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-stone-900">{religion.name}</p>
                     <p className="text-xs text-stone-500 mt-0.5">教祖: {religion.founderName} · Lv.{religion.level}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-stone-400">
-                      <span>👥 {religion.memberCount.toLocaleString()}人</span>
-                      <span>+{religion.weeklyGrowth}人/週</span>
+                      <span>{religion.memberCount.toLocaleString()} 人</span>
+                      <span>+{religion.weeklyGrowth} 人/週</span>
                     </div>
                   </div>
                   <div className="text-right shrink-0">

@@ -4,6 +4,7 @@ import { collection, addDoc, doc, getDoc, serverTimestamp, Timestamp } from "fir
 import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion } from "@/types";
+import Avatar from "@/components/Avatar";
 
 export default function PostComposer() {
   const { user } = useAuthStore();
@@ -63,9 +64,7 @@ export default function PostComposer() {
   return (
     <div className="bg-white border border-stone-200 p-4">
       <div className="flex gap-3">
-        <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg shrink-0">
-          {user.avatarIcon}
-        </div>
+        <Avatar src={user.avatarIcon} name={user.displayName} size="sm" />
         <div className="flex-1">
           <textarea
             placeholder="お祈りや啓示を投稿..."
@@ -83,7 +82,7 @@ export default function PostComposer() {
               <option value="">宗教を選択</option>
               {religions.map((r) => (
                 <option key={r.id} value={r.id}>
-                  {r.icon} {r.name}
+                  {r.name}
                 </option>
               ))}
             </select>

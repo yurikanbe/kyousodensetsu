@@ -32,12 +32,11 @@ export default function AssemblyListPage() {
       <h1 className="text-base font-bold text-stone-900 mb-4 tracking-wide">集会一覧</h1>
       {religions.length === 0 ? (
         <div className="bg-white border border-stone-200 p-10 text-center">
-          <p className="text-3xl mb-3 text-stone-300">💬</p>
           <p className="text-stone-500 text-sm mb-4">
             まだ参加している宗教がありません。宗教に入信して集会に参加しましょう。
           </p>
           <Link href="/search">
-            <button className="bg-stone-900 hover:bg-stone-800 text-white font-medium px-6 py-2 text-sm tracking-wide transition-colors">
+            <button className="bg-stone-900 hover:bg-stone-800 text-white font-medium px-6 py-2 text-xs tracking-widest transition-colors">
               宗教を探す
             </button>
           </Link>
@@ -47,8 +46,8 @@ export default function AssemblyListPage() {
           {religions.map((religion) => (
             <Link key={religion.id} href={`/religion/${religion.id}/assembly`}>
               <div className="bg-white border border-stone-200 p-4 flex items-center gap-4 hover:border-stone-400 transition-colors cursor-pointer">
-                <div className="w-11 h-11 bg-stone-100 flex items-center justify-center text-2xl shrink-0">
-                  {religion.icon}
+                <div className="w-11 h-11 bg-stone-100 flex items-center justify-center text-base font-bold text-stone-700 shrink-0">
+                  {religion.name.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-stone-900">{religion.name}</p>

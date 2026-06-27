@@ -4,13 +4,12 @@ import { useRouter } from "next/navigation";
 import { collection, addDoc, doc, updateDoc, arrayUnion, serverTimestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
-import { RELIGION_ICONS, RELIGION_CATEGORIES } from "@/types";
+import { RELIGION_CATEGORIES } from "@/types";
 
 export default function CreateReligionPage() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
   const [name, setName] = useState("");
-  const [selectedIcon, setSelectedIcon] = useState(RELIGION_ICONS[0]);
   const [doctrine, setDoctrine] = useState("");
   const [category, setCategory] = useState(RELIGION_CATEGORIES[0]);
   const [isPublic, setIsPublic] = useState(true);
@@ -42,7 +41,7 @@ export default function CreateReligionPage() {
     try {
       const religionRef = await addDoc(collection(db, "religions"), {
         name: name.trim(),
-        icon: selectedIcon,
+        icon: name.trim().charAt(0),
         doctrine: doctrine.trim(),
         category,
         isPublic,
@@ -80,7 +79,7 @@ export default function CreateReligionPage() {
       <div className="bg-white border border-stone-200 overflow-hidden">
         <div className="bg-stone-900 px-6 py-5 text-white">
           <div className="flex items-center gap-3">
-            <span className="text-stone-400 text-xl font-light tracking-widest">✦</span>
+            <span className="text-stone-400 text-sm font-light tracking-widest">✦</span>
             <div>
               <h1 className="text-base font-bold tracking-wider">新しい宗教を創設する</h1>
               <p className="text-stone-400 text-xs mt-0.5">あなただけの宗教を作り、信者を集めましょう</p>
@@ -108,34 +107,6 @@ export default function CreateReligionPage() {
               className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-400"
             />
             <p className="text-xs text-stone-400 mt-1 text-right">{name.length}/20 ※後から変更できません</p>
-          </div>
-
-          <div>
-            <label className="block text-xs font-medium text-stone-700 mb-3 tracking-widest uppercase">
-              アイコンを選択
-            </label>
-            <div className="grid grid-cols-10 gap-2">
-              {RELIGION_ICONS.map((icon) => (
-                <button
-                  key={icon}
-                  type="button"
-                  onClick={() => setSelectedIcon(icon)}
-                  className={`w-10 h-10 flex items-center justify-center text-xl transition-all hover:scale-110 ${
-                    selectedIcon === icon
-                      ? "bg-stone-900 ring-2 ring-stone-400 ring-offset-1 scale-110"
-                      : "bg-stone-100 hover:bg-stone-200"
-                  }`}
-                >
-                  {icon}
-                </button>
-              ))}
-            </div>
-            <div className="mt-3 flex items-center gap-2">
-              <span className="text-xs text-stone-500">選択中：</span>
-              <div className="w-11 h-11 bg-stone-100 flex items-center justify-center text-3xl">
-                {selectedIcon}
-              </div>
-            </div>
           </div>
 
           <div>
@@ -206,13 +177,9 @@ export default function CreateReligionPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 tracking-widest text-sm transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-stone-900 hover:bg-stone-800 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 tracking-widest text-sm transition-colors"
             >
-              {isSubmitting ? (
-                <>⏳ 創設中...</>
-              ) : (
-                <>✦ 宗教を創設する</>
-              )}
+              {isSubmitting ? "創設中..." : "宗教を創設する"}
             </button>
           </div>
         </form>

@@ -32,9 +32,8 @@ export default function HomePage() {
           <FeedPost key={post.id} post={post} />
         ))}
         {posts.length === 0 && (
-          <div className="text-center py-12 text-gray-400">
-            <p className="text-4xl mb-3">📜</p>
-            <p className="text-sm">まだ投稿がありません。宗教を創設して最初の啓示を投稿しましょう！</p>
+          <div className="text-center py-12 text-stone-400">
+            <p className="text-sm">まだ投稿がありません。宗教を創設して最初の啓示を投稿しましょう。</p>
           </div>
         )}
       </div>

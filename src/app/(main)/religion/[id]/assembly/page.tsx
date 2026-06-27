@@ -6,6 +6,7 @@ import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { rtdb, db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion, ChatMessage } from "@/types";
+import Avatar from "@/components/Avatar";
 
 function timeLabel(date: Date): string {
   return date.toLocaleTimeString("ja-JP", { hour: "2-digit", minute: "2-digit" });
@@ -98,8 +99,8 @@ export default function AssemblyPage({
     <div className="max-w-4xl mx-auto flex gap-4 h-[calc(100vh-8rem)]">
       <div className="flex-1 flex flex-col bg-white border border-stone-200 overflow-hidden min-w-0">
         <div className="bg-stone-900 px-4 py-3 flex items-center gap-3">
-          <div className="w-9 h-9 bg-white/10 flex items-center justify-center text-xl shrink-0">
-            {religion?.icon ?? "🏛️"}
+          <div className="w-8 h-8 bg-white/10 flex items-center justify-center text-sm font-bold text-white shrink-0">
+            {religion?.name.charAt(0) ?? "?"}
           </div>
           <div>
             <h1 className="text-white font-bold text-sm tracking-wide">{religion?.name ?? "集会"} — 集会</h1>
@@ -119,9 +120,7 @@ export default function AssemblyPage({
             return (
               <div key={msg.id} className={`flex gap-3 ${isMe ? "flex-row-reverse" : ""}`}>
                 {!isMe && (
-                  <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-base shrink-0">
-                    {msg.authorIcon}
-                  </div>
+                  <Avatar src={msg.authorIcon} name={msg.authorName} size="xs" />
                 )}
                 <div className={`max-w-xs md:max-w-md ${isMe ? "items-end" : "items-start"} flex flex-col`}>
                   {!isMe && (
@@ -134,9 +133,7 @@ export default function AssemblyPage({
                   )}
                   <div
                     className={`px-4 py-2.5 text-sm leading-relaxed ${
-                      isMe
-                        ? "bg-stone-900 text-white"
-                        : "bg-stone-100 text-stone-800"
+                      isMe ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-800"
                     }`}
                   >
                     {msg.content}
@@ -166,9 +163,9 @@ export default function AssemblyPage({
           <button
             onClick={handleSend}
             disabled={!text.trim()}
-            className="w-10 h-10 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white flex items-center justify-center transition-colors text-sm"
+            className="px-4 h-10 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 text-white flex items-center justify-center transition-colors text-xs tracking-wide"
           >
-            ▶
+            送信
           </button>
         </div>
       </div>
@@ -182,9 +179,7 @@ export default function AssemblyPage({
             {uniqueParticipants.slice(0, 5).map((msg) => (
               <div key={msg.authorId} className="flex items-center gap-2">
                 <div className="relative">
-                  <div className="w-7 h-7 rounded-full bg-stone-100 flex items-center justify-center text-sm">
-                    {msg.authorIcon}
-                  </div>
+                  <Avatar src={msg.authorIcon} name={msg.authorName} size="xs" />
                   <span className="absolute bottom-0 right-0 w-2 h-2 bg-green-400 border-2 border-white rounded-full"></span>
                 </div>
                 <div>

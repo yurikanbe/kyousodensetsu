@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Post } from "@/types";
 import { useAuthStore } from "@/store/useAuthStore";
+import Avatar from "@/components/Avatar";
 
 interface FeedPostProps {
   post: Post;
@@ -53,15 +54,13 @@ export default function FeedPost({ post }: FeedPostProps) {
   return (
     <article className="bg-white border border-stone-200 p-5 hover:border-stone-300 transition-colors">
       <div className="flex items-start gap-3">
-        <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg shrink-0">
-          {post.authorIcon}
-        </div>
+        <Avatar src={post.authorIcon} name={post.authorName} size="sm" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="font-semibold text-stone-900 text-sm">{post.authorName}</span>
             <Link href={`/religion/${post.religionId}`}>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-900 text-white text-xs font-medium hover:bg-stone-800 transition-colors cursor-pointer">
-                {post.religionIcon} {post.religionName}
+                {post.religionName}
               </span>
             </Link>
             <span className={`text-xs px-2 py-0.5 font-medium ${typeInfo.color}`}>
@@ -75,19 +74,19 @@ export default function FeedPost({ post }: FeedPostProps) {
       <div className="mt-3 whitespace-pre-wrap text-stone-800 text-sm leading-relaxed">
         {post.type === "経典" && post.scriptureTitle && (
           <div className="mb-2 p-3 bg-stone-50 border border-stone-200 border-l-2 border-l-stone-900">
-            <p className="text-xs text-stone-600 font-medium mb-1">📖 {post.scriptureTitle}</p>
+            <p className="text-xs text-stone-600 font-medium mb-1">{post.scriptureTitle}</p>
           </div>
         )}
         {post.content}
         {post.coinsEarned && (
           <p className="mt-2 text-stone-600 font-medium text-sm">
-            🪙 {post.coinsEarned}コイン獲得
+            {post.coinsEarned}コイン獲得
           </p>
         )}
       </div>
 
       {post.type === "経典" && (
-        <button className="mt-2 text-xs text-stone-500 hover:text-stone-900 flex items-center gap-1 tracking-wide transition-colors">
+        <button className="mt-2 text-xs text-stone-500 hover:text-stone-900 tracking-wide transition-colors">
           経典を読む →
         </button>
       )}
@@ -95,28 +94,28 @@ export default function FeedPost({ post }: FeedPostProps) {
       <div className="mt-4 pt-3 border-t border-stone-100 flex items-center gap-0.5 flex-wrap">
         <button
           onClick={handlePray}
-          className={`flex items-center gap-1.5 px-3 py-1.5 text-sm transition-colors ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide transition-colors ${
             hasPrayed
               ? "bg-stone-900 text-white font-medium"
               : "text-stone-500 hover:bg-stone-100 hover:text-stone-900"
           }`}
         >
-          🙏 {prayerCount.toLocaleString()} お祈り
+          {prayerCount.toLocaleString()} お祈り
         </button>
         <button
           onClick={() => setShowReply(!showReply)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors"
         >
-          💬 {post.replyCount} 返信
+          {post.replyCount} 返信
         </button>
-        <button className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors">
-          📢 {post.missionaryCount} 布教
+        <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors">
+          {post.missionaryCount} 布教
         </button>
         <button
           onClick={() => setShowOffering(!showOffering)}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs tracking-wide text-stone-500 hover:bg-stone-100 hover:text-stone-900 transition-colors"
         >
-          🪙 お布施
+          お布施
         </button>
       </div>
 
@@ -148,7 +147,7 @@ export default function FeedPost({ post }: FeedPostProps) {
           />
           <button
             onClick={() => { setReplyText(""); setShowReply(false); }}
-            className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-sm transition-colors"
+            className="px-4 py-2 bg-stone-900 hover:bg-stone-800 text-white text-xs tracking-wide transition-colors"
           >
             送信
           </button>

@@ -5,6 +5,7 @@ import { collection, getDocs, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion } from "@/types";
+import Avatar from "@/components/Avatar";
 
 export default function RightPanel() {
   const { user } = useAuthStore();
@@ -34,9 +35,7 @@ export default function RightPanel() {
         <div className="bg-white border border-stone-200 p-4">
           <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">あなたのステータス</p>
           <div className="flex flex-col items-center py-3">
-            <div className="w-14 h-14 rounded-full bg-stone-100 flex items-center justify-center text-3xl mb-2">
-              {user.avatarIcon}
-            </div>
+            <Avatar src={user.avatarIcon} name={user.displayName} size="lg" className="mb-2" />
             <p className="font-bold text-stone-900">{user.displayName}</p>
             <p className="text-xs text-stone-500 mb-3">信者レベル Lv.{user.level}</p>
             <div className="w-full bg-stone-100 h-1 mb-1">
@@ -68,8 +67,8 @@ export default function RightPanel() {
               {recommendedReligions.map((rel) => (
                 <Link key={rel.id} href={`/religion/${rel.id}`}>
                   <div className="flex items-center gap-3 p-2 hover:bg-stone-50 cursor-pointer transition-colors">
-                    <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-lg shrink-0">
-                      {rel.icon}
+                    <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-sm font-bold text-stone-700 shrink-0">
+                      {rel.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-stone-900 truncate">{rel.name}</p>

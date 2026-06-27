@@ -18,6 +18,7 @@ import {
 import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion, Member, Mission } from "@/types";
+import Avatar from "@/components/Avatar";
 
 const ROLE_COLOR: Record<string, string> = {
   教祖: "text-stone-900 font-bold",
@@ -125,15 +126,15 @@ export default function ReligionDetailPage({
     <div className="max-w-4xl mx-auto space-y-4">
       <div className="bg-stone-900 p-6 text-white">
         <div className="flex items-start gap-4">
-          <div className="w-16 h-16 bg-white/10 flex items-center justify-center text-4xl shrink-0">
-            {religion.icon}
+          <div className="w-14 h-14 bg-white/10 flex items-center justify-center text-2xl font-bold text-white shrink-0">
+            {religion.name.charAt(0)}
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold tracking-wide">{religion.name}</h1>
-            <div className="flex items-center gap-4 mt-2 flex-wrap text-sm text-stone-400">
-              <span>👥 {religion.memberCount.toLocaleString()}人</span>
-              <span>📖 {religion.scriptureCount}経典</span>
-              <span>🎵 {religion.hymnCount}賛歌</span>
+            <div className="flex items-center gap-4 mt-2 flex-wrap text-xs text-stone-400 tracking-wide">
+              <span>{religion.memberCount.toLocaleString()} 人</span>
+              <span>{religion.scriptureCount} 経典</span>
+              <span>{religion.hymnCount} 賛歌</span>
               <span>Lv.{religion.level}</span>
             </div>
           </div>
@@ -184,7 +185,6 @@ export default function ReligionDetailPage({
             <div className="grid grid-cols-2 gap-2">
               <Link href={`/religion/${id}/assembly`}>
                 <button className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors">
-                  <span className="text-2xl">💬</span>
                   <span className="text-xs font-medium text-stone-700 tracking-wide">集会に参加</span>
                 </button>
               </Link>
@@ -192,15 +192,12 @@ export default function ReligionDetailPage({
                 onClick={() => setShowOfferingModal(true)}
                 className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors"
               >
-                <span className="text-2xl">🪙</span>
                 <span className="text-xs font-medium text-stone-700 tracking-wide">お布施する</span>
               </button>
               <button className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors">
-                <span className="text-2xl">📖</span>
                 <span className="text-xs font-medium text-stone-700 tracking-wide">経典を読む</span>
               </button>
               <button className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors">
-                <span className="text-2xl">🎵</span>
                 <span className="text-xs font-medium text-stone-700 tracking-wide">賛歌を歌う</span>
               </button>
             </div>
@@ -216,13 +213,11 @@ export default function ReligionDetailPage({
                   <div
                     key={mission.id}
                     className={`p-3 border ${
-                      mission.completed
-                        ? "bg-stone-50 border-stone-300"
-                        : "bg-white border-stone-200"
+                      mission.completed ? "bg-stone-50 border-stone-300" : "bg-white border-stone-200"
                     }`}
                   >
                     <p className={`text-sm font-medium ${mission.completed ? "line-through text-stone-400" : "text-stone-800"}`}>
-                      {mission.completed ? "✓" : "○"} {mission.title}
+                      {mission.title}
                     </p>
                     <p className="text-xs text-stone-500 mt-1">報酬: {mission.reward} コイン</p>
                   </div>
@@ -239,9 +234,7 @@ export default function ReligionDetailPage({
               <div className="space-y-3">
                 {members.map((member) => (
                   <div key={member.userId} className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-base shrink-0">
-                      {member.avatarIcon}
-                    </div>
+                    <Avatar src={member.avatarIcon} name={member.displayName} size="xs" />
                     <div>
                       <p className="text-sm font-medium text-stone-900">{member.displayName}</p>
                       <p className={`text-xs ${ROLE_COLOR[member.role]}`}>
@@ -262,7 +255,7 @@ export default function ReligionDetailPage({
             <h3 className="text-base font-bold text-stone-900 mb-1 tracking-wide">お布施する</h3>
             <p className="text-xs text-stone-500 mb-5">{religion.name} への信仰を示しましょう</p>
             <div className="mb-4">
-              <label className="block text-xs font-medium text-stone-700 mb-2 tracking-wide">金額</label>
+              <label className="block text-xs font-medium text-stone-700 mb-2 tracking-wide">金額（コイン）</label>
               <input
                 type="number"
                 value={offeringAmount}

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signOut } from "firebase/auth";
-import { doc, getDoc, collection, query, where, getDocs, updateDoc, Timestamp } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
-import { RELIGION_ICONS } from "@/types";
 import { Religion, Post } from "@/types";
+import Avatar from "@/components/Avatar";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -53,15 +53,6 @@ export default function ProfilePage() {
     router.push("/auth");
   };
 
-  const handleAvatarChange = async (icon: string) => {
-    if (!user || user.coins < 200 || user.avatarIcon === icon) return;
-    await updateDoc(doc(db, "users", user.id), {
-      avatarIcon: icon,
-      coins: user.coins - 200,
-    });
-    setUser({ ...user, avatarIcon: icon, coins: user.coins - 200 });
-  };
-
   if (!user) return null;
 
   const xpPercent = Math.round((user.xp / user.xpToNext) * 100);
@@ -70,14 +61,12 @@ export default function ProfilePage() {
     <div className="max-w-2xl mx-auto space-y-4">
       <div className="bg-stone-900 p-6 text-white">
         <div className="flex items-center gap-4">
-          <div className="w-18 h-18 rounded-full bg-white/10 flex items-center justify-center text-4xl w-20 h-20">
-            {user.avatarIcon}
-          </div>
+          <Avatar src={user.avatarIcon} name={user.displayName} size="lg" />
           <div>
             <h1 className="text-xl font-bold tracking-wide">{user.displayName}</h1>
             <p className="text-stone-400 text-sm mt-0.5">信者レベル Lv.{user.level}</p>
-            <div className="flex items-center gap-3 mt-2 text-sm text-stone-400">
-              <span>🪙 {user.coins.toLocaleString()} コイン</span>
+            <div className="flex items-center gap-3 mt-2 text-xs text-stone-400">
+              <span>{user.coins.toLocaleString()} コイン</span>
               <span>{user.joinedReligionIds.length} 宗教</span>
             </div>
           </div>
@@ -117,12 +106,12 @@ export default function ProfilePage() {
             {joinedReligions.map((rel) => (
               <Link key={rel.id} href={`/religion/${rel.id}`}>
                 <div className="flex items-center gap-3 p-3 hover:bg-stone-50 cursor-pointer transition-colors">
-                  <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg">
-                    {rel.icon}
+                  <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-sm font-bold text-stone-700">
+                    {rel.name.charAt(0)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-stone-900 truncate">{rel.name}</p>
-                    <p className="text-xs text-stone-500">👥 {rel.memberCount.toLocaleString()}人 · Lv.{rel.level}</p>
+                    <p className="text-xs text-stone-500">{rel.memberCount.toLocaleString()} 人 · Lv.{rel.level}</p>
                   </div>
                   <span className="text-stone-400 text-xs">→</span>
                 </div>
@@ -131,27 +120,6 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
-
-      <div className="bg-white border border-stone-200 p-4">
-        <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-1">アバターアイコン変更</p>
-        <p className="text-xs text-stone-400 mb-3">コイン200枚で変更できます（現在: {user.coins}枚）</p>
-        <div className="grid grid-cols-10 gap-2">
-          {RELIGION_ICONS.map((icon) => (
-            <button
-              key={icon}
-              onClick={() => handleAvatarChange(icon)}
-              disabled={user.coins < 200 && user.avatarIcon !== icon}
-              className={`w-9 h-9 flex items-center justify-center text-xl transition-all hover:scale-110 disabled:opacity-40 ${
-                user.avatarIcon === icon
-                  ? "bg-stone-900 ring-2 ring-stone-400"
-                  : "bg-stone-100 hover:bg-stone-200"
-              }`}
-            >
-              {icon}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {myPosts.length > 0 && (
         <div className="bg-white border border-stone-200 p-4">
@@ -165,8 +133,8 @@ export default function ProfilePage() {
                 </div>
                 <p className="text-sm text-stone-800 line-clamp-2">{post.content}</p>
                 <div className="flex gap-3 mt-2 text-xs text-stone-400">
-                  <span>🙏 {post.prayerCount}</span>
-                  <span>💬 {post.replyCount}</span>
+                  <span>{post.prayerCount} 祈り</span>
+                  <span>{post.replyCount} 返信</span>
                 </div>
               </div>
             ))}
@@ -177,7 +145,7 @@ export default function ProfilePage() {
       <div className="pb-4">
         <button
           onClick={handleLogout}
-          className="w-full py-3 border border-stone-200 text-stone-500 hover:bg-stone-50 text-sm tracking-wide transition-colors"
+          className="w-full py-3 border border-stone-200 text-stone-500 hover:bg-stone-50 text-xs tracking-widest transition-colors"
         >
           ログアウト
         </button>

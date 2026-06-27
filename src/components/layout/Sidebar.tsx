@@ -6,6 +6,7 @@ import { doc, getDoc, Timestamp } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion } from "@/types";
+import Avatar from "@/components/Avatar";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -33,17 +34,17 @@ export default function Sidebar() {
   }, [user]);
 
   const navItems = [
-    { href: "/assembly", label: "集会", icon: "💬" },
-    { href: "/following", label: "信仰中の宗教", icon: "◈" },
-    { href: "/my-religions", label: "創設した宗教", icon: "◉" },
-    { href: "/ranking", label: "ランキング", icon: "◆" },
+    { href: "/assembly", label: "集会" },
+    { href: "/following", label: "信仰中の宗教" },
+    { href: "/my-religions", label: "創設した宗教" },
+    { href: "/ranking", label: "ランキング" },
   ];
 
   return (
     <aside className="w-64 shrink-0 h-screen sticky top-0 overflow-y-auto scrollbar-hide bg-white border-r border-stone-200 flex flex-col">
       <div className="p-4">
         <Link href="/create" className="block w-full">
-          <button className="w-full bg-stone-900 hover:bg-stone-800 text-white font-medium py-2.5 px-4 text-sm tracking-wide transition-colors">
+          <button className="w-full bg-stone-900 hover:bg-stone-800 text-white font-medium py-2.5 px-4 text-xs tracking-widest transition-colors">
             ＋ 新しい宗教を創設
           </button>
         </Link>
@@ -60,7 +61,6 @@ export default function Sidebar() {
                   : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
               }`}
             >
-              <span className="text-stone-400 text-xs">{item.icon}</span>
               <span className="text-sm">{item.label}</span>
             </div>
           </Link>
@@ -78,7 +78,9 @@ export default function Sidebar() {
                       : "text-stone-600 hover:bg-stone-50 hover:text-stone-900"
                   }`}
                 >
-                  <span className="text-base">{rel.icon}</span>
+                  <div className="w-5 h-5 bg-stone-200 flex items-center justify-center text-xs font-bold text-stone-700 shrink-0">
+                    {rel.name.charAt(0)}
+                  </div>
                   <span className="text-sm truncate">{rel.name}</span>
                 </div>
               </Link>
@@ -91,9 +93,7 @@ export default function Sidebar() {
         <div className="mt-auto p-4 border-t border-stone-200">
           <Link href="/profile">
             <div className="flex items-center gap-3 p-2 hover:bg-stone-50 cursor-pointer transition-colors">
-              <div className="w-9 h-9 rounded-full bg-stone-100 flex items-center justify-center text-lg shrink-0">
-                {user.avatarIcon}
-              </div>
+              <Avatar src={user.avatarIcon} name={user.displayName} size="sm" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-stone-900 truncate">{user.displayName}</p>
                 <p className="text-xs text-stone-400">Lv.{user.level}</p>

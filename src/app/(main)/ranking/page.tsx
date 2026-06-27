@@ -67,7 +67,6 @@ export default function RankingPage() {
             <div className="space-y-2">
               {sorted.length === 0 ? (
                 <div className="text-center py-12 text-stone-400">
-                  <p className="text-4xl mb-3">◈</p>
                   <p className="text-sm">まだ宗教がありません</p>
                 </div>
               ) : (
@@ -104,7 +103,7 @@ export default function RankingPage() {
                 {trending.map((rel, i) => (
                   <Link key={rel.id} href={`/religion/${rel.id}`}>
                     <div className="flex items-start gap-2 cursor-pointer hover:opacity-70 transition-opacity">
-                      <span className="text-xs font-bold text-stone-500 w-4">#{i + 1}</span>
+                      <span className="text-xs font-bold text-stone-400 w-4">#{i + 1}</span>
                       <div>
                         <p className="text-xs font-semibold text-stone-900 leading-tight">{rel.name}</p>
                         <p className="text-xs text-stone-500">+{rel.weeklyGrowth.toLocaleString()} 今週</p>
@@ -141,13 +140,7 @@ function RankingItem({
 
   return (
     <Link href={`/religion/${religion.id}`}>
-      <div
-        className={`flex items-center gap-3 p-3 border transition-all cursor-pointer ${
-          rank <= 3
-            ? "border-stone-300 bg-stone-50 hover:bg-white"
-            : "border-stone-100 bg-stone-50 hover:bg-white"
-        }`}
-      >
+      <div className="flex items-center gap-3 p-3 border border-stone-100 bg-stone-50 hover:bg-white transition-all cursor-pointer">
         <div
           className={`w-7 h-7 flex items-center justify-center text-white font-bold text-xs shrink-0 ${
             rankStyle || "bg-stone-300"
@@ -155,8 +148,8 @@ function RankingItem({
         >
           {rank}
         </div>
-        <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-xl shrink-0">
-          {religion.icon}
+        <div className="w-9 h-9 bg-stone-100 flex items-center justify-center text-sm font-bold text-stone-700 shrink-0">
+          {religion.name.charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-stone-900 text-sm truncate">{religion.name}</p>
