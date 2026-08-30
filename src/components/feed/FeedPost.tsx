@@ -32,7 +32,10 @@ export default function FeedPost({ post }: FeedPostProps) {
   const [replyText, setReplyText] = useState("");
   const [showOffering, setShowOffering] = useState(false);
 
-  const typeInfo = POST_TYPE_LABEL[post.type];
+  const typeInfo = POST_TYPE_LABEL[post.type] ?? {
+    label: post.type ?? "投稿",
+    color: "bg-stone-50 text-stone-600 border border-stone-200",
+  };
 
   const handlePray = () => {
     if (hasPrayed) {

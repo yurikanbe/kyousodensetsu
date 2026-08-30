@@ -13,9 +13,16 @@ export default function FollowingPage() {
   const [joinedReligions, setJoinedReligions] = useState<Religion[]>([]);
 
   useEffect(() => {
-    if (!user || user.joinedReligionIds.length === 0) return;
+    if (!user) return;
+    const followedOnlyIds = user.joinedReligionIds.filter(
+      (id) => !user.foundedReligionIds.includes(id)
+    );
+    if (followedOnlyIds.length === 0) {
+      setJoinedReligions([]);
+      return;
+    }
     Promise.all(
-      user.joinedReligionIds.map((id) => getDoc(doc(db, "religions", id)))
+      followedOnlyIds.map((id) => getDoc(doc(db, "religions", id)))
     ).then((snaps) => {
       setJoinedReligions(
         snaps
