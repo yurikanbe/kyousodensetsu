@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "set-coins": "node scripts/set-user-coins.mjs",
+    "reset-dev": "node scripts/reset-dev-data.mjs"
   },
   "dependencies": {
     "firebase": "^12.13.0",
@@ -22,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
+    "firebase-admin": "^13.0.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -103,6 +103,7 @@ export default function ReligionDetailPage({
 
   const handleOffering = async () => {
     if (!user || offeringAmount <= 0) return;
+    if (offeringAmount > user.coins) return;
     await Promise.all([
       updateDoc(doc(db, "users", user.id), { coins: increment(-offeringAmount) }),
       updateDoc(doc(db, "religions", id), { totalOfferings: increment(offeringAmount) }),
@@ -189,7 +190,10 @@ export default function ReligionDetailPage({
                 </button>
               </Link>
               <button
-                onClick={() => setShowOfferingModal(true)}
+                onClick={() => {
+                  setOfferingAmount(Math.min(100, user?.coins ?? 0));
+                  setShowOfferingModal(true);
+                }}
                 className="w-full flex flex-col items-center gap-2 p-4 bg-stone-50 hover:bg-stone-100 border border-stone-200 transition-colors"
               >
                 <span className="text-xs font-medium text-stone-700 tracking-wide">お布施する</span>
@@ -209,19 +213,39 @@ export default function ReligionDetailPage({
             <div className="bg-white border border-stone-200 p-4">
               <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">今日のミッション</p>
               <div className="space-y-2">
-                {missions.slice(0, 3).map((mission) => (
-                  <div
-                    key={mission.id}
-                    className={`p-3 border ${
-                      mission.completed ? "bg-stone-50 border-stone-300" : "bg-white border-stone-200"
-                    }`}
-                  >
-                    <p className={`text-sm font-medium ${mission.completed ? "line-through text-stone-400" : "text-stone-800"}`}>
-                      {mission.title}
-                    </p>
-                    <p className="text-xs text-stone-500 mt-1">報酬: {mission.reward} コイン</p>
-                  </div>
-                ))}
+                {missions.slice(0, 3).map((mission) => {
+                  const label = mission.label || mission.title || "ミッション";
+                  const rewardText = mission.rewards?.length
+                    ? mission.rewards
+                        .map((r) => {
+                          if (r.type === "contrib") return `貢献+${r.amount ?? 0}`;
+                          if (r.type === "xp") return `XP+${r.amount ?? 0}`;
+                          if (r.type === "coin") return `コイン+${r.amount ?? 0}`;
+                          if (r.type === "title") return "称号";
+                          if (r.type === "frame") return "フレーム";
+                          if (r.type === "appear_today") return "達成者に掲載";
+                          return r.type;
+                        })
+                        .join(" / ")
+                    : mission.reward != null
+                      ? `報酬: ${mission.reward} コイン`
+                      : null;
+                  return (
+                    <div
+                      key={mission.id}
+                      className={`p-3 border ${
+                        mission.completed ? "bg-stone-50 border-stone-300" : "bg-white border-stone-200"
+                      }`}
+                    >
+                      <p className={`text-sm font-medium ${mission.completed ? "line-through text-stone-400" : "text-stone-800"}`}>
+                        {label}
+                      </p>
+                      {rewardText && (
+                        <p className="text-xs text-stone-500 mt-1">{rewardText}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -259,12 +283,23 @@ export default function ReligionDetailPage({
               <input
                 type="number"
                 value={offeringAmount}
-                onChange={(e) => setOfferingAmount(Number(e.target.value))}
+                onChange={(e) => {
+                  const next = Number(e.target.value);
+                  const maxCoins = user?.coins ?? 0;
+                  if (Number.isNaN(next)) {
+                    setOfferingAmount(0);
+                    return;
+                  }
+                  setOfferingAmount(Math.min(Math.max(0, next), maxCoins));
+                }}
                 min={1}
                 max={user?.coins ?? 0}
                 className="w-full border border-stone-200 px-4 py-3 text-sm focus:outline-none focus:border-stone-400"
               />
               <p className="text-xs text-stone-400 mt-1">所持コイン: {user?.coins.toLocaleString()}</p>
+              {(user?.coins ?? 0) <= 0 && (
+                <p className="text-xs text-red-600 mt-1">所持コインがないため、お布施できません</p>
+              )}
             </div>
             <div className="flex gap-3">
               <button
@@ -275,7 +310,8 @@ export default function ReligionDetailPage({
               </button>
               <button
                 onClick={handleOffering}
-                className="flex-1 py-2.5 bg-stone-900 hover:bg-stone-800 text-white font-bold text-sm transition-colors"
+                disabled={!user || offeringAmount <= 0 || offeringAmount > user.coins}
+                className="flex-1 py-2.5 bg-stone-900 hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm transition-colors"
               >
                 お布施する
               </button>
