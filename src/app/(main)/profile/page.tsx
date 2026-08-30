@@ -6,17 +6,26 @@ import { signOut } from "firebase/auth";
 import { doc, getDoc, collection, query, where, getDocs, Timestamp } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
-import { Religion, Post } from "@/types";
+import { Religion, Post, FrameMaster, TitleMaster } from "@/types";
 import Avatar from "@/components/Avatar";
+import CosmeticEquip from "@/components/CosmeticEquip";
+import { fetchFrameMasters, fetchTitleMasters } from "@/lib/cosmetics";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, setUser } = useAuthStore();
   const [joinedReligions, setJoinedReligions] = useState<Religion[]>([]);
   const [myPosts, setMyPosts] = useState<Post[]>([]);
+  const [equippedTitle, setEquippedTitle] = useState<TitleMaster | null>(null);
+  const [equippedFrame, setEquippedFrame] = useState<FrameMaster | null>(null);
 
   useEffect(() => {
     if (!user) return;
+
+    Promise.all([fetchTitleMasters(), fetchFrameMasters()]).then(([titles, frames]) => {
+      setEquippedTitle(titles.find((t) => t.id === user.equippedTitleId) ?? null);
+      setEquippedFrame(frames.find((f) => f.id === user.equippedFrameId) ?? null);
+    });
 
     if (user.joinedReligionIds.length > 0) {
       Promise.all(
@@ -45,7 +54,7 @@ export default function ProfilePage() {
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
       setMyPosts(posts);
     });
-  }, [user]);
+  }, [user, user?.equippedTitleId, user?.equippedFrameId]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -61,9 +70,17 @@ export default function ProfilePage() {
     <div className="max-w-2xl mx-auto space-y-4">
       <div className="bg-stone-900 p-6 text-white">
         <div className="flex items-center gap-4">
-          <Avatar src={user.avatarIcon} name={user.displayName} size="lg" />
+          <Avatar
+            src={user.avatarIcon}
+            name={user.displayName}
+            size="lg"
+            frameCssKey={equippedFrame?.cssKey}
+          />
           <div>
             <h1 className="text-xl font-bold tracking-wide">{user.displayName}</h1>
+            {equippedTitle && (
+              <p className="text-stone-300 text-xs mt-0.5 tracking-wide">{equippedTitle.name}</p>
+            )}
             <p className="text-stone-400 text-sm mt-0.5">信者レベル Lv.{user.level}</p>
             <div className="flex items-center gap-3 mt-2 text-xs text-stone-400">
               <span>{user.coins.toLocaleString()} コイン</span>
@@ -98,6 +115,8 @@ export default function ProfilePage() {
           </div>
         ))}
       </div>
+
+      <CosmeticEquip />
 
       {joinedReligions.length > 0 && (
         <div className="bg-white border border-stone-200 p-4">

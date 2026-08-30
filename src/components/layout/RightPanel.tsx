@@ -6,6 +6,8 @@ import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion } from "@/types";
 import Avatar from "@/components/Avatar";
+import { frameCssKeyFromId } from "@/lib/cosmetics";
+import { SEED_TITLES } from "@/data/cosmeticsSeed";
 
 export default function RightPanel() {
   const { user } = useAuthStore();
@@ -28,6 +30,7 @@ export default function RightPanel() {
   if (!user) return null;
 
   const xpPercent = Math.round((user.xp / user.xpToNext) * 100);
+  const equippedTitleName = SEED_TITLES.find((t) => t.id === user.equippedTitleId)?.name;
 
   return (
     <aside className="w-72 shrink-0 hidden xl:block">
@@ -35,8 +38,17 @@ export default function RightPanel() {
         <div className="bg-white border border-stone-200 p-4">
           <p className="text-xs text-stone-400 font-medium tracking-widest uppercase mb-3">あなたのステータス</p>
           <div className="flex flex-col items-center py-3">
-            <Avatar src={user.avatarIcon} name={user.displayName} size="lg" className="mb-2" />
+            <Avatar
+              src={user.avatarIcon}
+              name={user.displayName}
+              size="lg"
+              className="mb-2"
+              frameCssKey={frameCssKeyFromId(user.equippedFrameId)}
+            />
             <p className="font-bold text-stone-900">{user.displayName}</p>
+            {equippedTitleName && (
+              <p className="text-xs text-stone-600 mb-1">{equippedTitleName}</p>
+            )}
             <p className="text-xs text-stone-500 mb-3">信者レベル Lv.{user.level}</p>
             <div className="w-full bg-stone-100 h-1 mb-1">
               <div

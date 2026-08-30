@@ -7,6 +7,7 @@ import { db } from "@/lib/firebase";
 import { useAuthStore } from "@/store/useAuthStore";
 import { Religion } from "@/types";
 import Avatar from "@/components/Avatar";
+import { frameCssKeyFromId } from "@/lib/cosmetics";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -100,7 +101,12 @@ export default function Sidebar() {
         <div className="mt-auto p-4 border-t border-stone-200">
           <Link href="/profile">
             <div className="flex items-center gap-3 p-2 hover:bg-stone-50 cursor-pointer transition-colors">
-              <Avatar src={user.avatarIcon} name={user.displayName} size="sm" />
+              <Avatar
+                src={user.avatarIcon}
+                name={user.displayName}
+                size="sm"
+                frameCssKey={frameCssKeyFromId(user.equippedFrameId)}
+              />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-stone-900 truncate">{user.displayName}</p>
                 <p className="text-xs text-stone-400">Lv.{user.level}</p>

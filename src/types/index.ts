@@ -1,5 +1,34 @@
 export type UserRole = "教祖" | "副教祖" | "信者";
 
+export type CosmeticRarity = "common" | "rare" | "epic";
+
+export type MissionAction =
+  | "pray"
+  | "post"
+  | "reply"
+  | "missionary"
+  | "offer"
+  | "visit"
+  | "dm_founder"
+  | "dm_member";
+
+export type MissionTarget = "own_religion" | "founder_posts" | "assembly";
+
+export type RewardType =
+  | "contrib"
+  | "appear_today"
+  | "xp"
+  | "coin"
+  | "title"
+  | "frame";
+
+export interface MissionReward {
+  type: RewardType;
+  amount?: number;
+  titleId?: string;
+  frameId?: string;
+}
+
 export interface User {
   id: string;
   displayName: string;
@@ -11,6 +40,8 @@ export interface User {
   xpToNext: number;
   foundedReligionIds: string[];
   joinedReligionIds: string[];
+  equippedTitleId?: string | null;
+  equippedFrameId?: string | null;
   createdAt: Date;
 }
 
@@ -29,6 +60,8 @@ export interface Religion {
   hymnCount: number;
   totalOfferings: number;
   weeklyGrowth: number;
+  contributionPoints?: number;
+  faithGauge?: number;
   pinnedMessage?: string;
   createdAt: Date;
 }
@@ -66,12 +99,56 @@ export interface ChatMessage {
   createdAt: Date;
 }
 
+export interface Reply {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorIcon: string;
+  content: string;
+  createdAt: Date;
+}
+
+/** デイリーミッション（パーツ組み合わせ） */
 export interface Mission {
   id: string;
   religionId: string;
-  title: string;
-  reward: number;
-  completed: boolean;
+  action: MissionAction;
+  target: MissionTarget;
+  label: string;
+  rewards: MissionReward[];
+  active: boolean;
+  order: number;
+  /** @deprecated 旧データ互換 */
+  title?: string;
+  /** @deprecated 旧データ互換 */
+  reward?: number;
+  /** クライアント側の当日達成フラグ */
+  completed?: boolean;
+}
+
+export interface TitleMaster {
+  id: string;
+  name: string;
+  description: string;
+  rarity: CosmeticRarity;
+  iconKey?: string;
+  sourceHint?: string;
+}
+
+export interface FrameMaster {
+  id: string;
+  name: string;
+  description: string;
+  rarity: CosmeticRarity;
+  cssKey: string;
+  sourceHint?: string;
+}
+
+export interface OwnedCosmetic {
+  id: string;
+  earnedAt: Date;
+  religionId?: string;
+  source: "mission" | "offering" | "event" | "seed";
 }
 
 export interface Member {
@@ -80,6 +157,8 @@ export interface Member {
   avatarIcon: string;
   role: UserRole;
   level: number;
+  equippedTitleId?: string | null;
+  equippedFrameId?: string | null;
 }
 
 export const RELIGION_ICONS = [
@@ -104,3 +183,20 @@ export const LEVEL_THRESHOLDS = [
   0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500,
   5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000,
 ];
+
+export const MISSION_ACTION_LABELS: Record<MissionAction, string> = {
+  pray: "お祈りする",
+  post: "TLに一言流す",
+  reply: "返信する",
+  missionary: "布教する",
+  offer: "お布施する",
+  visit: "参拝する",
+  dm_founder: "教祖にDMする",
+  dm_member: "信者にDMする",
+};
+
+export const MISSION_TARGET_LABELS: Record<MissionTarget, string> = {
+  own_religion: "この宗教",
+  founder_posts: "教祖の啓示",
+  assembly: "集会",
+};

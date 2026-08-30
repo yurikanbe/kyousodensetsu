@@ -46,9 +46,15 @@ export default function AuthPage() {
           xpToNext: 100,
           foundedReligionIds: [] as string[],
           joinedReligionIds: [] as string[],
+          equippedTitleId: null as string | null,
+          equippedFrameId: "frame_none" as string | null,
           createdAt: serverTimestamp(),
         };
         await setDoc(userRef, userData);
+        await setDoc(
+          doc(db, "users", firebaseUser.uid, "frames", "frame_none"),
+          { earnedAt: serverTimestamp(), source: "seed" }
+        );
         setUser({
           id: firebaseUser.uid,
           ...userData,
